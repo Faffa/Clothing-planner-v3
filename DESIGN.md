@@ -9,6 +9,41 @@ Every transition is deliberate and smooth.
 
 ---
 
+## Implementation Status
+
+### Pages (all browser-verified 2026-03-05)
+
+| Page | Route | Status | Key Features Verified |
+|------|-------|--------|----------------------|
+| Dashboard | `/` | Done | Greeting, outfit cards, weather widget, weekly summary, quick actions, wardrobe stats |
+| Wardrobe | `/wardrobe` | UI-Done | 12 demo items, color dots, favorites, dirty badges, layer/status filters, grid/list toggle |
+| Planner | `/planner` | UI-Done | 7-day grid, today highlight, weather temps, outfit items, swap/regen, approve, week nav |
+| Matching | `/matching` | UI-Done | 4 group cards, item tags, compatibility pairs, new group button |
+| Rules | `/rules` | UI-Done | 8-layer wear limits, consecutive checkboxes, color clash list, reset defaults |
+| Settings | `/settings` | UI-Done | Profile fields, temp unit, week start, data export/import, delete account |
+| Login | `/login` | Done | Split-screen branding, Google OAuth button, Maison gold logo |
+
+### Components
+
+| Component | File | Status |
+|-----------|------|--------|
+| AppLayout | `components/layout/AppLayout.tsx` | Done |
+| Sidebar | `components/layout/Sidebar.tsx` | Done |
+| Button | `components/common/Button.tsx` | Done + tested |
+| Skeleton | `components/common/Skeleton.tsx` | Done |
+| ToastProvider | `contexts/ToastContext.tsx` | Done |
+| AuthProvider | `contexts/AuthContext.tsx` | Done (demo user) |
+
+### Pending for Full Functionality
+- Supabase connection (auth, database, storage)
+- AddItemModal with photo upload
+- SwapModal for outfit item replacement
+- Onboarding flow (3 steps)
+- Real data persistence (currently demo data)
+- Service layer (wardrobeService, plannerService, matchingService, rulesService)
+
+---
+
 ## Critical Workflows
 
 ### 1. First-Time User Flow
@@ -127,6 +162,8 @@ Matching Page -> Create Group -> Name + Select Items
 | [] Rules|         |[]|
 |        |          |  |
 |--------|          |--|
+| Sarah  |          |  |
+| Helsinki|         |  |
 | [] Sett|          |[]|
 | [] Sign |         |[]|
 +--------+          +--+
@@ -136,87 +173,60 @@ Matching Page -> Create Group -> Name + Select Items
 ### Dashboard Page
 ```
 +--+------------------------------------------------------+
-|  |  Good morning, Sarah                    [Mar 4, 2026]|
+|  |  Good morning, Sarah                    [Mar 5, 2026]|
 |  +------------------------------------------------------+
 |  |                                                      |
 |  |  +--TODAY'S OUTFIT--------+  +--WEATHER-----------+  |
-|  |  |                        |  | 12C  Partly Cloudy |  |
-|  |  |  [Jacket]  [Top]      |  | Helsinki, Finland  |  |
-|  |  |  [Pants]   [Shoes]    |  | Hi: 14  Lo: 8      |  |
-|  |  |  [Bag]                |  +---------------------+  |
-|  |  |                        |                           |
-|  |  +------------------------+  +--QUICK ACTIONS------+  |
-|  |                              | [+] Add Item        |  |
-|  |  +--WEEKLY SUMMARY--------+ | [>] Generate Plan    |  |
-|  |  | Mon Tue Wed Thu Fri S S | | [~] Laundry Toggle  |  |
-|  |  | [=] [=] [=] [?] [?][ ][]| +---------------------+  |
-|  |  | 3/7 days planned        |                          |
-|  |  +-------------------------+  +--WARDROBE STATS----+  |
-|  |                              | 47 items | 5 dirty  |  |
-|  |                              | 12 outfits planned  |  |
-|  |                              +---------------------+  |
+|  |  | [Coat] [Knit] [Tee]   |  | 12C  Partly Cloudy |  |
+|  |  | [Jeans] [Boots]       |  | Helsinki, Finland  |  |
+|  |  |                        |  | Hi: 14  Lo: 8      |  |
+|  |  +------------------------+  +---------------------+  |
+|  |                                                      |
+|  |  +--WEEKLY SUMMARY-+ +--QUICK----+ +--WARDROBE----+  |
+|  |  | M T W T F S S   | | [+] Add   | | 47 items     |  |
+|  |  | v v v - - - -   | | [>] Plan  | | 5 in laundry |  |
+|  |  | 3/7 planned     | | [~] Wash  | | 12 planned   |  |
+|  |  +-----------------+ +-----------+ +--------------+  |
 +--+------------------------------------------------------+
 ```
 
 ### Wardrobe Page
 ```
 +--+------------------------------------------------------+
-|  |  My Wardrobe (47 items)                  [+ Add Item]|
+|  |  My Wardrobe (12 items)                 [+ Add Item] |
 |  +------------------------------------------------------+
-|  |  Filters: [All Layers v] [All Colors v] [Clean v]   |
+|  |  Filter: [All Layers v] [All Status v]     [grid|list]|
 |  +------------------------------------------------------+
 |  |                                                      |
 |  |  +--------+ +--------+ +--------+ +--------+        |
-|  |  |  PHOTO | |  PHOTO | |  PHOTO | |  PHOTO |        |
-|  |  |        | |        | |        | |        |        |
+|  |  |o PHOTO*| |o PHOTO | |o PHOTO*| |o PHOTO |        |
+|  |  |        | |        | |        | |   Dirty |        |
 |  |  |--------|+|--------| |--------| |--------|        |
-|  |  |Denim Jkt||Navy Top| |Wht Tee | |Tan Chno|        |
-|  |  |outer    ||top-base| |top-base| |bottom  |        |
-|  |  |[clean]  ||[clean] | |[dirty] | |[clean] |        |
+|  |  |WoolCoat||NavyBlzr | |CrmKnit | |WhtShirt|        |
+|  |  |OUTER 14||TOPOVR 8 | |TOPBS 11| |TOPBS 22|        |
 |  |  +--------+ +--------+ +--------+ +--------+        |
-|  |                                                      |
-|  |  +--------+ +--------+ +--------+ +--------+        |
-|  |  |  PHOTO | |  PHOTO | |  PHOTO | |  PHOTO |        |
-|  |  |        | |        | |        | |        |        |
-|  |  |--------| |--------| |--------| |--------|        |
-|  |  |Blk Boot||Crossbody| |Gold Wtch| |Rain Jkt|       |
-|  |  |footwear||bag      | |accessor.| |outer   |        |
-|  |  |[clean] ||[clean]  | |[clean]  | |[dirty] |        |
-|  |  +--------+ +--------+ +--------+ +--------+        |
-|  |                                                      |
+|  |  (* = favorite sparkle, o = color dot)               |
 +--+------------------------------------------------------+
 ```
 
 ### Weekly Planner Page
 ```
 +--+------------------------------------------------------+
-|  |  Week Plan      [< Prev]  Mar 2-8, 2026  [Next >]   |
+|  |  Weekly Planner         [Approve Plan] [Regenerate]  |
 |  +------------------------------------------------------+
-|  |  [Generate Week]  [Approve Plan]          Status: Draft|
+|  |        < Mar 2 - Mar 8, 2026 >     DRAFT            |
 |  +------------------------------------------------------+
 |  |                                                      |
-|  | MON       TUE       WED       THU       FRI         |
-|  | +------+ +------+ +------+ +------+ +------+       |
-|  | |Jacket| |Blazer| |Coat  | |Jacket| |Fleece|       |
-|  | |Shirt | |Blouse| |Swetr | |Shirt | |Tee   |       |
-|  | |Jeans | |Skirt | |Pants | |Chinos| |Jeans |       |
-|  | |Boots | |Heels | |Sneakr| |Loafr | |Boots |       |
-|  | |Bag   | |Bag   | |Backpk| |Clutch| |Tote  |       |
-|  | |      | |      | |      | |      | |      |       |
-|  | |[swap]| |[swap]| |[swap]| |[swap]| |[swap]|       |
-|  | |[regen]| |[regen]| |[regen]| |[regen]| |[regen]|  |
-|  | +------+ +------+ +------+ +------+ +------+       |
-|  |                                                      |
-|  | SAT       SUN                                        |
-|  | +------+ +------+                                    |
-|  | |Hoodie| |Coat  |                                    |
-|  | |Tee   | |Knit  |                                    |
-|  | |Shorts| |Jeans |                                    |
-|  | |Sandal| |Boots |                                    |
-|  | |      | |      |                                    |
-|  | |[swap]| |[swap]|                                    |
-|  | |[regen]| |[regen]|                                  |
-|  | +------+ +------+                                    |
+|  | MON 8*  TUE 10* WED 12* THU 11* FRI 9*  SAT   SUN  |
+|  | +-----+ +-----+ +-----+ +-----+ +-----+ +---+ +---+|
+|  | |Outer| |Outer| |Outer| |Outer| |Outer| | O | | O ||
+|  | |Top  | |Top  | |Top  | |Top  | |Top  | | T | | T ||
+|  | |Bottm| |Bottm| |Bottm| |Bottm| |Bottm| | B | | B ||
+|  | |Foot | |Foot | |Foot | |Foot | |Foot | | F | | F ||
+|  | |Swap | |Swap | |Swap | |Swap | |Swap | |   | |   ||
+|  | |Regen| |Regen| |Regen| |Regen| |Regen| |   | |   ||
+|  | +-----+ +-----+ +-----+ +-----+ +-----+ +---+ +---+|
+|  |  (* = weather temp per day, THU highlighted = today) |
 +--+------------------------------------------------------+
 ```
 
@@ -249,17 +259,17 @@ Step 1/3                    Step 2/3                    Step 3/3
 
 ## Requirements Refinements
 
-### Added/Modified Requirements
+### Added/Modified Requirements (from original spec)
 1. **REQ-090 refined**: Changed to "Maison" design system with specific color/font tokens
 2. **REQ-170 expanded**: Dashboard now includes weather widget, today's outfit, weekly summary
 3. **REQ-095 refined**: Onboarding is 3 steps (profile, upload, rules) not generic
-4. **Added REQ-091**: Background grain texture for depth (CSS noise pattern)
-5. **Added REQ-092**: Page transition animations (Framer Motion AnimatePresence)
-6. **Added REQ-098**: Staggered card reveal animations on grid pages
+4. **Added REQ-091**: Background grain texture for depth (CSS noise pattern) - Done
+5. **Added REQ-092**: Page transition animations (Framer Motion variants) - Done
+6. **Added REQ-098**: Staggered card reveal animations on grid pages - Done
 
-### Phase Prioritization (Recommended)
-- **Phase 1**: Auth + Wardrobe CRUD + Dashboard + Layout + Design System
-- **Phase 2**: Planner + Rules + Matching + History
+### Phase Prioritization
+- **Phase 1**: Auth + Wardrobe CRUD + Dashboard + Layout + Design System *(UI mostly done)*
+- **Phase 2**: Planner + Rules + Matching + History *(UI done, logic pending)*
 - **Phase 3**: AI features + Bulk upload intelligence + Feedback
 - **Phase 4**: Analytics + Advanced features + Accessibility polish
 - **Phase 5**: PWA + Offline + Push notifications
@@ -270,13 +280,14 @@ Step 1/3                    Step 2/3                    Step 3/3
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Styling | Tailwind CSS | Rapid iteration, design token support, JIT |
+| Styling | Tailwind CSS v4 | @theme tokens, JIT, no config file needed |
 | State | Context + hooks | Simpler than Redux for this scale |
-| Routing | React Router v6 | Standard, nested layouts |
-| Animation | Framer Motion | Best React animation lib, layout animations |
-| Forms | React Hook Form | Performance, validation |
-| Image processing | browser-image-compression | Client-side, no server cost |
-| Background removal | @imgly/background-removal | Client-side ONNX model |
+| Routing | React Router v7 | Standard, nested layouts, data loading |
+| Animation | Framer Motion 12 | Best React animation lib, layout animations |
+| Forms | React Hook Form | Performance, validation (installed, not yet used) |
+| Image processing | browser-image-compression | Client-side, no server cost (installed) |
+| Background removal | @imgly/background-removal | Client-side ONNX model (not yet installed) |
 | Icons | Lucide React | Clean, consistent, tree-shakable |
 | Date handling | date-fns | Lightweight, functional |
-| Testing | Vitest + RTL + Playwright | Modern, fast, comprehensive |
+| Testing | Vitest + RTL | Modern, fast, 9 tests passing |
+| Path alias | `@/` -> `src/` | Configured in tsconfig + vite |

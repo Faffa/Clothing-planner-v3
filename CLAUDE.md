@@ -2,66 +2,74 @@
 
 ## Project Overview
 **Maison** - A luxury wardrobe management and weekly outfit planner.
-Stack: React 18 + TypeScript + Vite + Supabase + Tailwind CSS + Framer Motion
+Stack: React 19 + TypeScript 5.9 + Vite 7 + Supabase + Tailwind CSS v4 + Framer Motion 12
 
 ## Architecture
-- **Frontend**: React SPA with React Router v6, component-driven architecture
-- **Backend**: Supabase (Auth, PostgreSQL, Storage, Edge Functions)
+- **Frontend**: React SPA with React Router v7, component-driven architecture
+- **Backend**: Supabase (Auth, PostgreSQL, Storage, Edge Functions) - not yet connected
 - **State**: React Context + custom hooks (no Redux)
-- **Styling**: Tailwind CSS with custom design tokens in `tailwind.config.ts`
+- **Styling**: Tailwind CSS v4 with `@theme` tokens in `src/styles/globals.css`
 - **Animations**: Framer Motion for page transitions and micro-interactions
-- **Testing**: Vitest + React Testing Library (unit), Playwright (e2e)
+- **Testing**: Vitest + React Testing Library (unit), Chrome browser automation (visual)
 
 ## Design System - "Maison" Aesthetic
-### Colors (defined in tailwind.config.ts)
-- Background: `parchment` (#FAF7F2), `parchment-dark` (#F0EBE3)
-- Sidebar/Dark: `espresso` (#1A1412), `espresso-light` (#2C2420)
-- Primary accent: `terracotta` (#C4654A)
-- Secondary: `sage` (#7D8E7D)
-- Gold: `gold` (#B89B6E)
-- Text: `ink` (#1A1412), `ink-light` (#6B5E54)
-- Card: white with `shadow-maison` (warm-toned shadow)
-- Error: `rouge` (#B94A4A)
-- Success: `sage` (#7D8E7D)
+### Colors (defined in src/styles/globals.css @theme block)
+- Background: `parchment` (#FAF7F2), `parchment-dark` (#F0EBE3), `parchment-deep` (#E5DED4)
+- Sidebar/Dark: `espresso` (#1A1412), `espresso-light` (#2C2420), `espresso-mid` (#3D332C)
+- Primary accent: `terracotta` (#C4654A), `terracotta-light` (#D4856E), `terracotta-dark` (#A44E36)
+- Secondary: `sage` (#7D8E7D), `sage-light` (#A3B0A3), `sage-dark` (#5E6E5E)
+- Gold: `gold` (#B89B6E), `gold-light` (#D4BC94), `gold-dark` (#96794E)
+- Text: `ink` (#1A1412), `ink-light` (#6B5E54), `ink-muted` (#9B8E84)
+- Error: `rouge` (#B94A4A), `rouge-light` (#D47070)
+- Shadows: `shadow-maison`, `shadow-maison-md`, `shadow-maison-lg` (warm-toned)
 
-### Typography
-- Display/Headings: "Playfair Display" (serif, elegant, fashion-editorial)
-- Body/UI: "DM Sans" (clean, modern, highly readable)
-- Mono/Data: "JetBrains Mono" (code/data display)
+### Typography (loaded via Google Fonts in index.html)
+- Display/Headings: "Playfair Display" (serif, elegant, fashion-editorial) - `font-display`
+- Body/UI: "DM Sans" (clean, modern, highly readable) - `font-body`
+- Mono/Data: "JetBrains Mono" (code/data display) - `font-mono`
 
 ### Design Principles
 1. **Photo-centric**: Clothing images are heroes - large, well-cropped, minimal overlay
 2. **Editorial spacing**: Generous whitespace, deliberate asymmetry
 3. **Warm & organic**: No cold blues/grays - everything warm-toned
-4. **Subtle grain**: Background noise texture for tactile depth
-5. **Motion with purpose**: Staggered reveals, smooth transitions, no gratuitous animation
+4. **Subtle grain**: Background SVG noise texture (body::before) for tactile depth
+5. **Motion with purpose**: Staggered reveals, smooth transitions via `EASE_MAISON` curve
+
+## Tailwind CSS v4 Notes
+- Tokens defined in `@theme {}` block in `src/styles/globals.css`, NOT in tailwind.config.ts
+- Import via `@import "tailwindcss"` at top of globals.css
+- Plugin added via `@tailwindcss/vite` in vite.config.ts
+- Custom colors/shadows/fonts available as Tailwind utilities (e.g., `bg-parchment`, `text-terracotta`)
 
 ## File Structure
 ```
 src/
   components/
-    layout/          # AppLayout, Sidebar, Header, OnboardingGuard
-    common/          # Button, Modal, Toast, Skeleton, PhotoCropper
-    wardrobe/        # ClothingCard, WardrobeGrid, AddItemModal, BulkUpload
-    planner/         # WeekView, DayCard, SwapModal, OutfitStack
-    matching/        # GroupEditor, CompatibilityMatrix
-    rules/           # RulesEditor, ColorClashEditor
-    dashboard/       # DashboardWidgets, TodayOutfit, WeatherWidget
-  pages/             # Page-level components (one per route)
-  services/          # Supabase service modules (wardrobeService, etc.)
-  hooks/             # Custom React hooks (useAuth, useWardrobe, etc.)
-  types/             # TypeScript interfaces and enums
-  lib/               # Utilities, constants, defaults
-  styles/            # Global CSS, grain texture, font imports
-  contexts/          # React Contexts (AuthContext, ToastContext)
+    layout/          # AppLayout, Sidebar
+    common/          # Button, Skeleton
+    wardrobe/        # (planned) ClothingCard, WardrobeGrid, AddItemModal
+    planner/         # (planned) WeekView, DayCard, SwapModal
+    matching/        # (planned) GroupEditor, CompatibilityMatrix
+    rules/           # (planned) RulesEditor, ColorClashEditor
+    dashboard/       # (planned) DashboardWidgets, TodayOutfit
+  pages/             # DashboardPage, WardrobePage, PlannerPage, MatchingPage, RulesPage, SettingsPage, LoginPage
+  services/          # (planned) Supabase service modules
+  hooks/             # (planned) Custom React hooks
+  types/             # TypeScript interfaces, enums, constants (Layer, ClothingItem, etc.)
+  lib/               # animations.ts, constants.ts
+  styles/            # globals.css (Tailwind + @theme tokens + grain texture)
+  contexts/          # AuthContext, ToastContext
+  test/              # setup.ts (jest-dom)
 ```
 
 ## Conventions
-- **Components**: PascalCase, one component per file, co-located styles if needed
+- **Components**: PascalCase, one component per file, co-located test files (*.test.tsx)
 - **Hooks**: `use` prefix, return objects not arrays
 - **Services**: camelCase, async functions, typed returns
 - **Types**: PascalCase interfaces, UPPER_SNAKE for constants/enums
 - **File naming**: PascalCase for components, camelCase for services/hooks/utils
+- **Animations**: Use shared variants from `lib/animations.ts` (stagger, fadeUp, fadeIn, scaleIn)
+- **Framer Motion ease**: Always cast as `[number, number, number, number]` or use `EASE_MAISON`
 
 ## Layer Types (8 total)
 `outer` | `top-over` | `top-base` | `dress` | `bottom` | `footwear` | `accessory` | `bag`
@@ -71,20 +79,26 @@ black, white, gray, navy, blue, light-blue, teal, green, olive, khaki,
 brown, tan, beige, cream, burgundy, red, coral, pink, purple, lavender, yellow, multi
 
 ## Key Patterns
-- All Supabase tables use RLS (Row-Level Security)
-- Auth via Google OAuth with PKCE flow
-- Images compressed client-side before upload (max 1MB)
-- Toast notifications for all user feedback
-- Skeleton loaders for all async content
-- All forms validate before submission
+- All Supabase tables will use RLS (Row-Level Security)
+- Auth via Google OAuth with PKCE flow (currently demo user in AuthContext)
+- Images compressed client-side before upload (max 1MB) - browser-image-compression installed
+- Toast notifications for all user feedback (ToastContext)
+- Skeleton loaders for all async content (Skeleton component)
+- All forms validate before submission (react-hook-form installed)
+- Path alias `@/` maps to `src/` (configured in tsconfig.app.json + vite.config.ts)
 
 ## Git Workflow
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`
 - Update CHANGELOG.md on every meaningful change
-- Update REQUIREMENTS.csv status when implementing features
-- Test before committing (both unit and browser verification)
+- Update REQUIREMENTS.csv status when implementing features (Planned -> UI-Done -> Done)
+- Test before committing (both unit tests and browser verification)
+
+## Requirement Statuses
+- **Planned**: Not started
+- **UI-Done**: Frontend UI built with demo data; backend/persistence not connected
+- **Done**: Fully implemented and verified
 
 ## Testing Strategy
-- **Unit**: Vitest + RTL for component logic and services
-- **Browser**: Manual verification via Chrome automation for visual/UX
+- **Unit**: Vitest + RTL for component logic and services (`npx vitest run`)
+- **Browser**: Chrome automation for visual/UX verification
 - **Coverage target**: 80%+ for services, 60%+ for components
