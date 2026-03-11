@@ -50,23 +50,7 @@ function getGroqClient(): Groq | null {
   return new Groq({ apiKey, dangerouslyAllowBrowser: true });
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────
 
-function describeItem(item: ClothingItem): string {
-  return `${item.name} (${LAYER_LABELS[item.layer]}, ${item.color}${item.is_favorite ? ', favorite' : ''})`;
-}
-
-function describeWardrobe(items: ClothingItem[]): string {
-  const byLayer: Partial<Record<Layer, string[]>> = {};
-  for (const item of items) {
-    if (!item.is_clean) continue; // skip dirty items
-    if (!byLayer[item.layer]) byLayer[item.layer] = [];
-    byLayer[item.layer]!.push(describeItem(item));
-  }
-  return Object.entries(byLayer)
-    .map(([layer, descs]) => `${LAYER_LABELS[layer as Layer]}:\n  ${descs!.join('\n  ')}`)
-    .join('\n');
-}
 
 function describeRules(rules: WearingRule[], clashes: ColorClash[]): string {
   const ruleLines = rules.map(r =>
@@ -94,7 +78,7 @@ export async function generateWeekPlanAI(
   checkRateLimit();
 
   const cleanItems = items.filter(i => i.is_clean);
-  const itemMap = new Map(cleanItems.map(i => [i.id, i]));
+  // itemMap reserved for future use with full item lookups
 
   // Build a compact ID reference for the prompt
   const itemRef = cleanItems.map(i =>
@@ -188,7 +172,7 @@ export interface OutfitSuggestion {
 
 export async function getSmartSuggestions(
   items: ClothingItem[],
-  rules: WearingRule[],
+  _rules: WearingRule[],
   clashes: ColorClash[],
   context?: { occasion?: string; weather?: string },
 ): Promise<OutfitSuggestion[]> {

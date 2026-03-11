@@ -27,7 +27,7 @@ const STAGE_LABELS: Record<ProcessingStage | 'cropping' | 'saving', string> = {
 };
 
 export function PhotoRetakeModal({ open, item, onClose, onSave }: PhotoRetakeModalProps) {
-  const [rawFile, setRawFile] = useState<File | null>(null);
+  const [, setRawFile] = useState<File | null>(null);
   const [rawPreview, setRawPreview] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const [stage, setStage] = useState<ProcessingStage | 'cropping' | 'saving' | null>(null);
@@ -65,7 +65,8 @@ export function PhotoRetakeModal({ open, item, onClose, onSave }: PhotoRetakeMod
     const croppedFile = new File([croppedBlob], 'retake.png', { type: croppedBlob.type });
 
     try {
-      const result = await processImagePipeline(croppedFile, (s) => setStage(s));
+      const croppedDataUrl = await fileToDataUrl(croppedFile);
+      const result = await processImagePipeline(croppedFile, croppedDataUrl, (s: ProcessingStage) => setStage(s));
       const finalBlob = result.bgBlob ?? croppedBlob;
       const previewUrl = result.bgUrl ?? await fileToDataUrl(croppedFile);
       setProcessedBlob(finalBlob);

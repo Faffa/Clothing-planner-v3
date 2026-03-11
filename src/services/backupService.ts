@@ -1,4 +1,4 @@
-import type { BackupData, ClothingItem, MatchingGroup, GroupCompatibility, WearingRule, ColorClash } from '@/types';
+import type { BackupData, ClothingItem } from '@/types';
 import * as wardrobeService from '@/services/wardrobeService';
 import * as matchingService from '@/services/matchingService';
 import * as rulesService from '@/services/rulesService';

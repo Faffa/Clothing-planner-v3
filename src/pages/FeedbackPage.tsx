@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Trash2, Filter } from 'lucide-react';
-import { Button } from '@/components/common/Button';
 import { useFeedback } from '@/hooks/useFeedback';
 import { stagger, fadeUp } from '@/lib/animations';
 import type { FeedbackStatus } from '@/types';
@@ -54,14 +53,12 @@ export function FeedbackPage() {
             <span className="text-xs text-ink-muted">Feedback button</span>
             <button
               onClick={() => toggleEnabled(!enabled)}
-              className={`relative w-10 h-5 rounded-full transition-colors ${
-                enabled ? 'bg-terracotta' : 'bg-parchment-deep'
-              }`}
+              className={`relative w-10 h-5 rounded-full transition-colors ${enabled ? 'bg-terracotta' : 'bg-parchment-deep'
+                }`}
             >
               <span
-                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                  enabled ? 'translate-x-5' : 'translate-x-0.5'
-                }`}
+                className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
               />
             </button>
           </label>
@@ -76,9 +73,8 @@ export function FeedbackPage() {
         </div>
         <button
           onClick={() => setFilterStatus('all')}
-          className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
-            filterStatus === 'all' ? 'bg-ink text-white' : 'bg-parchment-dark text-ink-muted hover:text-ink'
-          }`}
+          className={`text-xs px-3 py-1.5 rounded-full transition-colors ${filterStatus === 'all' ? 'bg-ink text-white' : 'bg-parchment-dark text-ink-muted hover:text-ink'
+            }`}
         >
           All ({items.length})
         </button>
@@ -86,9 +82,8 @@ export function FeedbackPage() {
           <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
-              filterStatus === status ? config.color + ' font-semibold' : 'bg-parchment-dark text-ink-muted hover:text-ink'
-            }`}
+            className={`text-xs px-3 py-1.5 rounded-full transition-colors ${filterStatus === status ? config.color + ' font-semibold' : 'bg-parchment-dark text-ink-muted hover:text-ink'
+              }`}
           >
             {config.label} ({statusCounts[status]})
           </button>
@@ -153,11 +148,10 @@ export function FeedbackPage() {
                     </select>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className={`p-1.5 rounded-lg transition-colors ${
-                        confirmDeleteId === item.id
+                      className={`p-1.5 rounded-lg transition-colors ${confirmDeleteId === item.id
                           ? 'text-rouge bg-rouge/10'
                           : 'text-ink-muted hover:text-rouge hover:bg-rouge/5'
-                      }`}
+                        }`}
                       title={confirmDeleteId === item.id ? 'Click again to confirm' : 'Delete'}
                     >
                       <Trash2 size={12} />
