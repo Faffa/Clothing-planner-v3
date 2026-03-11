@@ -12,14 +12,21 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@google/generative-ai": "^0.24.1",
+    "@imgly/background-removal": "^1.7.0",
     "@supabase/supabase-js": "^2.98.0",
     "browser-image-compression": "^2.0.2",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.35.0",
+    "groq-sdk": "^1.1.1",
     "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-hook-form": "^7.71.2",
+    "react-image-crop": "^11.0.10",
     "react-router-dom": "^7.13.1"
   },
   "devDependencies": {

@@ -47,15 +47,15 @@ src/
   components/
     layout/          # AppLayout, Sidebar
     common/          # Button, Skeleton
-    wardrobe/        # (planned) ClothingCard, WardrobeGrid, AddItemModal
-    planner/         # (planned) WeekView, DayCard, SwapModal
-    matching/        # (planned) GroupEditor, CompatibilityMatrix
+    wardrobe/        # ClothingCard, AddItemModal, EditItemModal, BulkUploadModal, BulkMetadataEditModal
+    planner/         # SwapModal
+    matching/        # AddGroupModal, EditGroupModal
     rules/           # (planned) RulesEditor, ColorClashEditor
     dashboard/       # (planned) DashboardWidgets, TodayOutfit
   pages/             # DashboardPage, WardrobePage, PlannerPage, MatchingPage, RulesPage, SettingsPage, LoginPage
-  services/          # (planned) Supabase service modules
-  hooks/             # (planned) Custom React hooks
-  types/             # TypeScript interfaces, enums, constants (Layer, ClothingItem, etc.)
+  services/          # wardrobeService, rulesService, matchingService, imageProcessingService, backupService, planService, generatorService
+  hooks/             # useWardrobe, useRules, useMatching, usePlanner
+  types/             # TypeScript interfaces, enums, constants (Layer, ClothingItem, BackupData, etc.)
   lib/               # animations.ts, constants.ts
   styles/            # globals.css (Tailwind + @theme tokens + grain texture)
   contexts/          # AuthContext, ToastContext
@@ -86,6 +86,10 @@ brown, tan, beige, cream, burgundy, red, coral, pink, purple, lavender, yellow, 
 - Skeleton loaders for all async content (Skeleton component)
 - All forms validate before submission (react-hook-form installed)
 - Path alias `@/` maps to `src/` (configured in tsconfig.app.json + vite.config.ts)
+- Drag-drop in PlannerPage via `@dnd-kit/core` (PointerSensor with 8px activation distance)
+- Bulk operations batch API calls in groups of 10 (Promise.all) to avoid rate limits
+- Backup export/import via `backupService.ts` — generates new UUIDs on import, remaps references
+- Dashboard is data-driven: uses `useWardrobe`, `useRules`, `usePlanner` for real stats
 
 ## Git Workflow
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`

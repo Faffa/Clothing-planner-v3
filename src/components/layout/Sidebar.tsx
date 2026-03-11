@@ -7,6 +7,7 @@ import {
   Calendar,
   Puzzle,
   SlidersHorizontal,
+  MessageSquare,
   Settings,
   LogOut,
   ChevronLeft,
@@ -20,6 +21,7 @@ const iconMap = {
   Calendar,
   Puzzle,
   SlidersHorizontal,
+  MessageSquare,
   Settings,
   LogOut,
 };
@@ -30,6 +32,7 @@ const navItems = [
   { path: '/planner', label: 'Planner', icon: 'Calendar' as const },
   { path: '/matching', label: 'Matching', icon: 'Puzzle' as const },
   { path: '/rules', label: 'Rules', icon: 'SlidersHorizontal' as const },
+  { path: '/feedback', label: 'Feedback', icon: 'MessageSquare' as const },
 ];
 
 export function Sidebar() {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -6,46 +6,133 @@ import {
   Shirt,
   Grid3X3,
   List,
-  WashingMachine,
-  Sparkle,
+  Images,
+  Search,
+  ArrowUpDown,
+  CheckSquare,
+  Square,
+  X,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/common/Button';
-import { LAYERS, CLOTHING_COLORS, type Layer, type ClothingColor, type ClothingItem } from '@/types';
+import { ClothingCard } from '@/components/wardrobe/ClothingCard';
+import { AddItemModal } from '@/components/wardrobe/AddItemModal';
+import { EditItemModal } from '@/components/wardrobe/EditItemModal';
+import { BulkUploadModal } from '@/components/wardrobe/BulkUploadModal';
+import { BulkMetadataEditModal } from '@/components/wardrobe/BulkMetadataEditModal';
+import { PhotoRetakeModal } from '@/components/wardrobe/PhotoRetakeModal';
+import { useWardrobe } from '@/hooks/useWardrobe';
+import { LAYERS } from '@/types';
+import type { Layer, ClothingItem } from '@/types';
 import { LAYER_LABELS } from '@/lib/constants';
-
-// Demo data for development
-const DEMO_ITEMS: ClothingItem[] = [
-  { id: '1', user_id: 'demo', name: 'Wool Overcoat', layer: 'outer', color: 'tan', photo_url: null, temp_min: -5, temp_max: 12, seasons: ['autumn', 'winter'], is_clean: true, is_favorite: true, wear_count: 14, tags: [], created_at: '', updated_at: '' },
-  { id: '2', user_id: 'demo', name: 'Navy Blazer', layer: 'top-over', color: 'navy', photo_url: null, temp_min: 5, temp_max: 22, seasons: ['spring', 'autumn'], is_clean: true, is_favorite: false, wear_count: 8, tags: [], created_at: '', updated_at: '' },
-  { id: '3', user_id: 'demo', name: 'Cream Cable Knit', layer: 'top-base', color: 'cream', photo_url: null, temp_min: 0, temp_max: 15, seasons: ['autumn', 'winter'], is_clean: true, is_favorite: true, wear_count: 11, tags: [], created_at: '', updated_at: '' },
-  { id: '4', user_id: 'demo', name: 'White Oxford Shirt', layer: 'top-base', color: 'white', photo_url: null, temp_min: 10, temp_max: 30, seasons: ['all-year'], is_clean: false, is_favorite: false, wear_count: 22, tags: [], created_at: '', updated_at: '' },
-  { id: '5', user_id: 'demo', name: 'Black Slim Jeans', layer: 'bottom', color: 'black', photo_url: null, temp_min: 0, temp_max: 25, seasons: ['all-year'], is_clean: true, is_favorite: true, wear_count: 30, tags: [], created_at: '', updated_at: '' },
-  { id: '6', user_id: 'demo', name: 'Khaki Chinos', layer: 'bottom', color: 'khaki', photo_url: null, temp_min: 10, temp_max: 30, seasons: ['spring', 'summer', 'autumn'], is_clean: true, is_favorite: false, wear_count: 16, tags: [], created_at: '', updated_at: '' },
-  { id: '7', user_id: 'demo', name: 'Chelsea Boots', layer: 'footwear', color: 'brown', photo_url: null, temp_min: -5, temp_max: 20, seasons: ['autumn', 'winter'], is_clean: true, is_favorite: true, wear_count: 25, tags: [], created_at: '', updated_at: '' },
-  { id: '8', user_id: 'demo', name: 'White Sneakers', layer: 'footwear', color: 'white', photo_url: null, temp_min: 5, temp_max: 35, seasons: ['spring', 'summer'], is_clean: false, is_favorite: false, wear_count: 18, tags: [], created_at: '', updated_at: '' },
-  { id: '9', user_id: 'demo', name: 'Leather Crossbody', layer: 'bag', color: 'brown', photo_url: null, temp_min: null, temp_max: null, seasons: ['all-year'], is_clean: true, is_favorite: false, wear_count: 12, tags: [], created_at: '', updated_at: '' },
-  { id: '10', user_id: 'demo', name: 'Gold Watch', layer: 'accessory', color: 'yellow', photo_url: null, temp_min: null, temp_max: null, seasons: ['all-year'], is_clean: true, is_favorite: true, wear_count: 40, tags: [], created_at: '', updated_at: '' },
-  { id: '11', user_id: 'demo', name: 'Burgundy Scarf', layer: 'accessory', color: 'burgundy', photo_url: null, temp_min: -10, temp_max: 10, seasons: ['autumn', 'winter'], is_clean: true, is_favorite: false, wear_count: 6, tags: [], created_at: '', updated_at: '' },
-  { id: '12', user_id: 'demo', name: 'Linen Dress', layer: 'dress', color: 'beige', photo_url: null, temp_min: 18, temp_max: 35, seasons: ['summer'], is_clean: true, is_favorite: false, wear_count: 4, tags: [], created_at: '', updated_at: '' },
-];
-
 import { stagger, fadeUp } from '@/lib/animations';
+import { ClothingCardSkeleton } from '@/components/common/Skeleton';
+import { preloadBackgroundRemoval } from '@/services/imageProcessingService';
+
+type SortOption = 'recent' | 'name' | 'most-worn' | 'by-layer';
 
 export function WardrobePage() {
-  const [items] = useState<ClothingItem[]>(DEMO_ITEMS);
+  const { items, loading, addItem, addItems, editItem, removeItem, bulkEditItems, bulkDeleteItems } = useWardrobe();
   const [filterLayer, setFilterLayer] = useState<Layer | 'all'>('all');
   const [filterClean, setFilterClean] = useState<'all' | 'clean' | 'dirty'>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('recent');
+  const [addOpen, setAddOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<ClothingItem | null>(null);
 
-  const filtered = items.filter(item => {
-    if (filterLayer !== 'all' && item.layer !== filterLayer) return false;
-    if (filterClean === 'clean' && !item.is_clean) return false;
-    if (filterClean === 'dirty' && item.is_clean) return false;
-    return true;
-  });
+  // Selection mode
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
+  const [retakeItem, setRetakeItem] = useState<ClothingItem | null>(null);
 
-  const getColorHex = (color: ClothingColor) =>
-    CLOTHING_COLORS.find(c => c.value === color)?.hex || '#ccc';
+  // Preload WASM for background removal while user browses wardrobe
+  useEffect(() => { preloadBackgroundRemoval(); }, []);
+
+  const filtered = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    let result = items.filter(item => {
+      if (filterLayer !== 'all' && item.layer !== filterLayer) return false;
+      if (filterClean === 'clean' && !item.is_clean) return false;
+      if (filterClean === 'dirty' && item.is_clean) return false;
+      if (query) {
+        const layerLabel = LAYER_LABELS[item.layer]?.toLowerCase() || '';
+        const match = item.name.toLowerCase().includes(query)
+          || item.color.toLowerCase().includes(query)
+          || layerLabel.includes(query)
+          || item.tags.some(t => t.toLowerCase().includes(query));
+        if (!match) return false;
+      }
+      return true;
+    });
+
+    // Sort
+    switch (sortBy) {
+      case 'name':
+        result = [...result].sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'most-worn':
+        result = [...result].sort((a, b) => b.wear_count - a.wear_count);
+        break;
+      case 'by-layer': {
+        const layerOrder = LAYERS.map(l => l.value);
+        result = [...result].sort((a, b) => layerOrder.indexOf(a.layer) - layerOrder.indexOf(b.layer));
+        break;
+      }
+      case 'recent':
+      default:
+        result = [...result].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+    }
+
+    return result;
+  }, [items, filterLayer, filterClean, searchQuery, sortBy]);
+
+  const hasItems = items.length > 0;
+  const hasResults = filtered.length > 0;
+  const isSearching = searchQuery.trim() !== '' || filterLayer !== 'all' || filterClean !== 'all';
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    setConfirmBulkDelete(false);
+  };
+
+  const selectAll = () => {
+    setSelectedIds(new Set(filtered.map(i => i.id)));
+  };
+
+  const deselectAll = () => {
+    setSelectedIds(new Set());
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedIds(new Set());
+    setConfirmBulkDelete(false);
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirmBulkDelete) {
+      setConfirmBulkDelete(true);
+      return;
+    }
+    await bulkDeleteItems(Array.from(selectedIds));
+    exitSelectionMode();
+  };
+
+  const selectedItems = useMemo(
+    () => items.filter(i => selectedIds.has(i.id)),
+    [items, selectedIds],
+  );
 
   return (
     <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-6xl">
@@ -55,19 +142,83 @@ export function WardrobePage() {
           <h1 className="font-display text-3xl text-ink">My Wardrobe</h1>
           <p className="text-ink-muted text-sm mt-1">{items.length} items &middot; {items.filter(i => !i.is_clean).length} in laundry</p>
         </div>
-        <Button variant="primary" icon={<Plus size={16} />}>
-          Add Item
-        </Button>
+        <div className="flex gap-2">
+          {!selectionMode && (
+            <Button variant="ghost" icon={<CheckSquare size={16} />} onClick={() => setSelectionMode(true)}>
+              Select
+            </Button>
+          )}
+          <Button variant="ghost" icon={<Images size={16} />} onClick={() => setBulkOpen(true)}>
+            Bulk Upload
+          </Button>
+          <Button variant="primary" icon={<Plus size={16} />} onClick={() => setAddOpen(true)}>
+            Add Item
+          </Button>
+        </div>
       </motion.div>
+
+      {/* Selection Toolbar */}
+      {selectionMode && (
+        <motion.div
+          variants={fadeUp}
+          className="flex items-center gap-3 mb-4 p-3 bg-terracotta/5 border border-terracotta/20 rounded-xl"
+        >
+          <button onClick={selectAll} className="flex items-center gap-1.5 text-xs text-ink hover:text-terracotta transition-colors">
+            <CheckSquare size={14} />
+            Select All
+          </button>
+          <button onClick={deselectAll} className="flex items-center gap-1.5 text-xs text-ink hover:text-terracotta transition-colors">
+            <Square size={14} />
+            Deselect All
+          </button>
+          <span className="text-xs text-ink-muted">{selectedIds.size} selected</span>
+          <div className="ml-auto flex gap-2">
+            {selectedIds.size > 0 && (
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={<Pencil size={14} />}
+                  onClick={() => setBulkEditOpen(true)}
+                >
+                  Edit Selected
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  icon={<Trash2 size={14} />}
+                  onClick={handleBulkDelete}
+                >
+                  {confirmBulkDelete ? `Confirm Delete (${selectedIds.size})` : 'Delete Selected'}
+                </Button>
+              </>
+            )}
+            <Button variant="ghost" size="sm" icon={<X size={14} />} onClick={exitSelectionMode}>
+              Cancel
+            </Button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Filters Bar */}
       <motion.div variants={fadeUp} className="flex items-center gap-3 mb-6 flex-wrap">
+        {/* Search */}
+        <div className="relative">
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-muted/50" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search items..."
+            className="text-xs bg-white border border-parchment-deep rounded-lg pl-8 pr-3 py-2 text-ink w-44 focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta"
+          />
+        </div>
+
         <div className="flex items-center gap-1.5 text-ink-muted">
           <Filter size={14} />
           <span className="text-xs font-medium">Filter:</span>
         </div>
 
-        {/* Layer Filter */}
         <select
           value={filterLayer}
           onChange={e => setFilterLayer(e.target.value as Layer | 'all')}
@@ -79,7 +230,6 @@ export function WardrobePage() {
           ))}
         </select>
 
-        {/* Status Filter */}
         <select
           value={filterClean}
           onChange={e => setFilterClean(e.target.value as 'all' | 'clean' | 'dirty')}
@@ -88,6 +238,21 @@ export function WardrobePage() {
           <option value="all">All Status</option>
           <option value="clean">Clean</option>
           <option value="dirty">In Laundry</option>
+        </select>
+
+        {/* Sort */}
+        <div className="flex items-center gap-1.5 text-ink-muted">
+          <ArrowUpDown size={14} />
+        </div>
+        <select
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value as SortOption)}
+          className="text-xs bg-white border border-parchment-deep rounded-lg px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta"
+        >
+          <option value="recent">Recent</option>
+          <option value="name">Name A-Z</option>
+          <option value="most-worn">Most Worn</option>
+          <option value="by-layer">By Layer</option>
         </select>
 
         <div className="ml-auto flex items-center gap-1 bg-parchment-dark rounded-lg p-0.5">
@@ -106,75 +271,76 @@ export function WardrobePage() {
         </div>
       </motion.div>
 
+      {/* Loading */}
+      {loading && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <ClothingCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
       {/* Grid */}
-      <motion.div
-        variants={stagger}
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
-      >
-        {filtered.map(item => (
-          <motion.div
-            key={item.id}
-            variants={fadeUp}
-            whileHover={{ y: -4 }}
-            className="group bg-white rounded-xl overflow-hidden shadow-maison hover:shadow-maison-md transition-shadow duration-300 cursor-pointer"
-          >
-            {/* Photo Area */}
-            <div className="aspect-square bg-parchment-dark relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Shirt size={40} className="text-ink-muted/20" />
-              </div>
-
-              {/* Color indicator */}
-              <div
-                className="absolute top-2.5 left-2.5 w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                style={{ background: getColorHex(item.color) }}
-              />
-
-              {/* Favorite */}
-              {item.is_favorite && (
-                <div className="absolute top-2.5 right-2.5">
-                  <Sparkle size={14} className="text-gold fill-gold" />
-                </div>
-              )}
-
-              {/* Laundry badge */}
-              {!item.is_clean && (
-                <div className="absolute bottom-2.5 right-2.5 bg-rouge/90 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full flex items-center gap-1">
-                  <WashingMachine size={10} />
-                  Dirty
-                </div>
-              )}
-
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-espresso/0 group-hover:bg-espresso/40 transition-colors duration-300 flex items-center justify-center">
-                <span className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  View Details
-                </span>
-              </div>
-            </div>
-
-            {/* Info */}
-            <div className="p-3">
-              <h3 className="text-sm font-medium text-ink truncate">{item.name}</h3>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-[10px] text-ink-muted uppercase tracking-wider">
-                  {LAYER_LABELS[item.layer]}
-                </span>
-                <span className="text-[10px] text-ink-muted">
-                  {item.wear_count} wears
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {filtered.length === 0 && (
-        <motion.div variants={fadeUp} className="text-center py-20">
-          <Shirt size={48} className="mx-auto text-ink-muted/30 mb-4" />
-          <p className="text-ink-muted text-sm">No items match your filters</p>
+      {!loading && hasResults && (
+        <motion.div
+          variants={stagger}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+        >
+          {filtered.map(item => (
+            <ClothingCard
+              key={item.id}
+              item={item}
+              onClick={() => setEditingItem(item)}
+              selectable={selectionMode}
+              selected={selectedIds.has(item.id)}
+              onSelect={toggleSelect}
+              onRetakePhoto={(id) => setRetakeItem(items.find(i => i.id === id) ?? null)}
+            />
+          ))}
         </motion.div>
       )}
+
+      {!loading && !hasResults && (
+        <motion.div variants={fadeUp} className="text-center py-20">
+          <Shirt size={48} className="mx-auto text-ink-muted/30 mb-4" />
+          <p className="text-ink-muted text-sm">
+            {isSearching && hasItems
+              ? 'No items match your search or filters'
+              : 'No items in your wardrobe yet'}
+          </p>
+        </motion.div>
+      )}
+
+      {/* Modals */}
+      <AddItemModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onSubmit={addItem}
+      />
+      <EditItemModal
+        open={!!editingItem}
+        item={editingItem}
+        onClose={() => setEditingItem(null)}
+        onSave={editItem}
+        onDelete={removeItem}
+      />
+      <BulkUploadModal
+        open={bulkOpen}
+        onClose={() => setBulkOpen(false)}
+        onSubmit={addItems}
+      />
+      <BulkMetadataEditModal
+        open={bulkEditOpen}
+        items={selectedItems}
+        onClose={() => setBulkEditOpen(false)}
+        onSave={bulkEditItems}
+      />
+      <PhotoRetakeModal
+        open={!!retakeItem}
+        item={retakeItem}
+        onClose={() => setRetakeItem(null)}
+        onSave={editItem}
+      />
     </motion.div>
   );
 }

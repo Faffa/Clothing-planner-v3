@@ -6,7 +6,14 @@
       "Bash(npm install:*)",
       "Bash(mkdir:*)",
       "Bash(rm:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(supabase:*)",
+      "Bash(npm test:*)",
+      "Bash(grep lock:*)",
+      "Bash(curl:*)",
+      "Bash(xargs grep:*)",
+      "Bash(source .env:*)",
+      "Bash(find \"C:\\\\Users\\\\admin\\\\Documents\\\\Clothing planner v3\\\\src\" -name \"*backup*\" -o -name \"*export*\" -o -name \"*import*\" 2>/dev/null | head -20)"
     ]
   }
 }

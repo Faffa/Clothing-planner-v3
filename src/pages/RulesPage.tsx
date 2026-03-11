@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { SlidersHorizontal, Palette, RotateCcw } from 'lucide-react';
+import { SlidersHorizontal, Palette, RotateCcw, Save, X, Plus } from 'lucide-react';
 import { Button } from '@/components/common/Button';
-import { DEFAULT_WEARING_RULES, DEFAULT_COLOR_CLASHES, LAYER_LABELS } from '@/lib/constants';
-import type { Layer } from '@/types';
-
+import { useRules } from '@/hooks/useRules';
+import { LAYER_LABELS } from '@/lib/constants';
+import { CLOTHING_COLORS } from '@/types';
+import type { Layer, ClothingColor } from '@/types';
 import { stagger, fadeUp } from '@/lib/animations';
 
 export function RulesPage() {
-  const [rules, setRules] = useState(DEFAULT_WEARING_RULES);
+  const { rules, clashes, saving, updateRule, saveRules, addClash, removeClash, resetDefaults } = useRules();
+  const [addingClash, setAddingClash] = useState(false);
+  const [newClashA, setNewClashA] = useState<ClothingColor>('red');
+  const [newClashB, setNewClashB] = useState<ClothingColor>('pink');
 
-  const updateRule = (layer: string, field: 'max_per_week' | 'allow_consecutive', value: number | boolean) => {
-    setRules(prev => prev.map(r =>
-      r.layer === layer ? { ...r, [field]: value } : r
-    ));
+  const handleAddClash = async () => {
+    if (newClashA === newClashB) return;
+    await addClash(newClashA, newClashB);
+    setAddingClash(false);
   };
 
   return (
@@ -23,9 +27,14 @@ export function RulesPage() {
           <h1 className="font-display text-3xl text-ink">Wearing Rules</h1>
           <p className="text-ink-muted text-sm mt-1">Configure limits for outfit generation</p>
         </div>
-        <Button variant="ghost" size="sm" icon={<RotateCcw size={14} />}>
-          Reset Defaults
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" icon={<RotateCcw size={14} />} onClick={resetDefaults}>
+            Reset Defaults
+          </Button>
+          <Button variant="primary" size="sm" icon={<Save size={14} />} onClick={saveRules} disabled={saving}>
+            {saving ? 'Saving...' : 'Save Rules'}
+          </Button>
+        </div>
       </motion.div>
 
       {/* Wearing Rules */}
@@ -79,18 +88,50 @@ export function RulesPage() {
         <p className="text-ink-muted text-xs mb-4">These color combinations will be avoided in outfit generation.</p>
 
         <div className="space-y-2">
-          {DEFAULT_COLOR_CLASHES.map((clash, i) => (
+          {clashes.map((clash, i) => (
             <div key={i} className="flex items-center gap-3 p-3 bg-parchment/50 rounded-lg">
               <span className="text-sm capitalize text-ink">{clash.color_a}</span>
               <span className="text-ink-muted text-xs">clashes with</span>
               <span className="text-sm capitalize text-ink">{clash.color_b}</span>
+              <button
+                onClick={() => removeClash(i)}
+                className="ml-auto p-1 rounded hover:bg-parchment-dark text-ink-muted hover:text-rouge transition-colors"
+              >
+                <X size={14} />
+              </button>
             </div>
           ))}
         </div>
 
-        <Button variant="ghost" size="sm" className="mt-3" icon={<Palette size={14} />}>
-          Add Color Clash Rule
-        </Button>
+        {addingClash ? (
+          <div className="flex items-center gap-2 mt-3 p-3 bg-parchment/50 rounded-lg">
+            <select
+              value={newClashA}
+              onChange={e => setNewClashA(e.target.value as ClothingColor)}
+              className="text-xs bg-white border border-parchment-deep rounded-lg px-2 py-1.5 text-ink"
+            >
+              {CLOTHING_COLORS.filter(c => c.value !== 'multi').map(c => (
+                <option key={c.value} value={c.value}>{c.value}</option>
+              ))}
+            </select>
+            <span className="text-ink-muted text-xs">clashes with</span>
+            <select
+              value={newClashB}
+              onChange={e => setNewClashB(e.target.value as ClothingColor)}
+              className="text-xs bg-white border border-parchment-deep rounded-lg px-2 py-1.5 text-ink"
+            >
+              {CLOTHING_COLORS.filter(c => c.value !== 'multi').map(c => (
+                <option key={c.value} value={c.value}>{c.value}</option>
+              ))}
+            </select>
+            <Button variant="primary" size="sm" onClick={handleAddClash}>Add</Button>
+            <Button variant="ghost" size="sm" onClick={() => setAddingClash(false)}>Cancel</Button>
+          </div>
+        ) : (
+          <Button variant="ghost" size="sm" className="mt-3" icon={<Plus size={14} />} onClick={() => setAddingClash(true)}>
+            Add Color Clash Rule
+          </Button>
+        )}
       </motion.div>
     </motion.div>
   );

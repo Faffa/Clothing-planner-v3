@@ -8,7 +8,11 @@ import { PlannerPage } from '@/pages/PlannerPage';
 import { MatchingPage } from '@/pages/MatchingPage';
 import { RulesPage } from '@/pages/RulesPage';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { FeedbackPage } from '@/pages/FeedbackPage';
 import { LoginPage } from '@/pages/LoginPage';
+import { OnboardingPage } from '@/pages/OnboardingPage';
+
+const basename = import.meta.env.PROD ? '/Clothing-planner-v3' : '/';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -32,6 +36,19 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function OnboardingGuard({ children }: { children: React.ReactNode }) {
+  const { profile } = useAuth();
+
+  // Profile still loading (null) — don't redirect yet
+  if (profile === null) return null;
+
+  if (!profile.onboarding_completed) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 function AppRoutes() {
   const { user } = useAuth();
 
@@ -42,9 +59,19 @@ function AppRoutes() {
         element={user ? <Navigate to="/" replace /> : <LoginPage />}
       />
       <Route
+        path="/onboarding"
         element={
           <AuthGuard>
-            <AppLayout />
+            <OnboardingPage />
+          </AuthGuard>
+        }
+      />
+      <Route
+        element={
+          <AuthGuard>
+            <OnboardingGuard>
+              <AppLayout />
+            </OnboardingGuard>
           </AuthGuard>
         }
       >
@@ -54,6 +81,7 @@ function AppRoutes() {
         <Route path="matching" element={<MatchingPage />} />
         <Route path="rules" element={<RulesPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="feedback" element={<FeedbackPage />} />
       </Route>
     </Routes>
   );
@@ -61,7 +89,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <ToastProvider>
           <AppRoutes />

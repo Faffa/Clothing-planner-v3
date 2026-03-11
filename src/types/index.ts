@@ -18,6 +18,11 @@ export type Season = 'spring' | 'summer' | 'autumn' | 'winter' | 'all-year';
 
 export type LaundryStatus = 'clean' | 'dirty';
 
+export interface ItemRuleOverride {
+  max_per_week?: number | null;
+  allow_consecutive?: boolean | null;
+}
+
 export interface ClothingItem {
   id: string;
   user_id: string;
@@ -32,6 +37,7 @@ export interface ClothingItem {
   is_favorite: boolean;
   wear_count: number;
   tags: string[];
+  rule_override?: ItemRuleOverride | null;
   created_at: string;
   updated_at: string;
 }
@@ -70,8 +76,19 @@ export interface WearingRule {
 }
 
 export interface ColorClash {
+  id?: string;
+  user_id?: string;
   color_a: ClothingColor;
   color_b: ClothingColor;
+}
+
+export interface DayOutfitItem {
+  id: string;
+  plan_id: string;
+  date: string;
+  layer: Layer;
+  item_id: string | null;
+  is_locked: boolean;
 }
 
 export interface DayOutfit {
@@ -96,6 +113,19 @@ export interface OutfitTemplate {
   name: string;
   items: Record<Layer, string | null>; // item IDs
   created_at: string;
+}
+
+export type FeedbackStatus = 'new' | 'parked' | 'done' | 'cancelled';
+
+export interface FeedbackItem {
+  id: string;
+  user_id: string;
+  page: string;
+  element: string | null;
+  message: string;
+  status: FeedbackStatus;
+  created_at: string;
+  updated_at: string;
 }
 
 export const LAYERS: { value: Layer; label: string; icon: string }[] = [
@@ -133,6 +163,17 @@ export const CLOTHING_COLORS: { value: ClothingColor; hex: string }[] = [
   { value: 'yellow', hex: '#eab308' },
   { value: 'multi', hex: 'linear-gradient(135deg, #ef4444, #eab308, #22c55e, #3b82f6)' },
 ];
+
+export interface BackupData {
+  version: string;
+  exported_at: string;
+  wardrobe: ClothingItem[];
+  matchingGroups: MatchingGroup[];
+  compatibilities: GroupCompatibility[];
+  wearingRules: WearingRule[];
+  colorClashes: ColorClash[];
+  templates?: OutfitTemplate[];
+}
 
 export const SEASONS: { value: Season; label: string }[] = [
   { value: 'spring', label: 'Spring' },

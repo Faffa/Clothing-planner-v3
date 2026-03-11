@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   User,
@@ -6,14 +7,77 @@ import {
   Download,
   Upload,
   Trash2,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import { Button } from '@/components/common/Button';
+import { exportData, downloadBackup, validateBackup, importData } from '@/services/backupService';
 
 import { stagger, fadeUp } from '@/lib/animations';
 
 export function SettingsPage() {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const { showToast } = useToast();
+  const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = async () => {
+    if (!user) return;
+    setExporting(true);
+    try {
+      const data = await exportData(user.id);
+      downloadBackup(data);
+      showToast('Backup exported');
+    } catch (err) {
+      console.error('Export failed:', err);
+      showToast('Failed to export data', 'error');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const json = JSON.parse(text);
+
+      if (!validateBackup(json)) {
+        showToast('Invalid backup file format', 'error');
+        return;
+      }
+
+      const summary = [
+        json.wardrobe.length && `${json.wardrobe.length} items`,
+        json.matchingGroups.length && `${json.matchingGroups.length} groups`,
+        json.wearingRules.length && `${json.wearingRules.length} rules`,
+        json.colorClashes.length && `${json.colorClashes.length} color clashes`,
+      ].filter(Boolean).join(', ');
+
+      if (!window.confirm(`Import ${summary}? This will merge with your existing data.`)) {
+        return;
+      }
+
+      const result = await importData(user.id, json);
+      showToast(`Imported: ${result.groups} groups, ${result.rules} rules, ${result.clashes} clashes`);
+    } catch (err) {
+      console.error('Import failed:', err);
+      showToast('Failed to import data', 'error');
+    } finally {
+      setImporting(false);
+      // Reset file input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-3xl">
@@ -80,8 +144,31 @@ export function SettingsPage() {
       <motion.div variants={fadeUp} className="bg-white rounded-xl shadow-maison p-6 mb-4">
         <h2 className="font-display text-lg text-ink mb-4">Data</h2>
         <div className="flex gap-3">
-          <Button variant="ghost" size="sm" icon={<Download size={14} />}>Export Data</Button>
-          <Button variant="ghost" size="sm" icon={<Upload size={14} />}>Import Data</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+            onClick={handleExport}
+            disabled={exporting || importing}
+          >
+            {exporting ? 'Exporting...' : 'Export Data'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={importing ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+            onClick={handleImportClick}
+            disabled={exporting || importing}
+          >
+            {importing ? 'Importing...' : 'Import Data'}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            className="hidden"
+          />
         </div>
       </motion.div>
 

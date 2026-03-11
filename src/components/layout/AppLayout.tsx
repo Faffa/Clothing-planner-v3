@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sidebar } from './Sidebar';
+import { FeedbackButton } from '@/components/feedback/FeedbackButton';
+import { useFeedback } from '@/hooks/useFeedback';
 
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
@@ -9,6 +11,8 @@ const pageVariants = {
 };
 
 export function AppLayout() {
+  const { enabled, addFeedback } = useFeedback();
+
   return (
     <div className="min-h-screen bg-parchment">
       <Sidebar />
@@ -26,6 +30,9 @@ export function AppLayout() {
           <Outlet />
         </motion.div>
       </main>
+
+      {/* Floating feedback button (toggleable) */}
+      {enabled && <FeedbackButton onSubmit={addFeedback} />}
     </div>
   );
 }
