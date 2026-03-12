@@ -225,12 +225,17 @@ export async function processImagePipeline(
   file: File,
   dataUrl: string,
   onStage: (stage: ProcessingStage) => void,
+  options?: { skipBgRemoval?: boolean },
 ): Promise<ProcessingResult> {
   // Run BG removal and AI detection in parallel
-  onStage('removing-bg');
+  onStage(options?.skipBgRemoval ? 'detecting-ai' : 'removing-bg');
+
+  const bgPromise = options?.skipBgRemoval
+    ? Promise.resolve(null)
+    : removeBackground(file);
 
   const [bgResult, aiResult] = await Promise.allSettled([
-    removeBackground(file),
+    bgPromise,
     detectItemMetadata(file),
   ]);
 

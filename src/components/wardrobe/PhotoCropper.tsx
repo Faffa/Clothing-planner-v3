@@ -3,15 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ReactCrop from 'react-image-crop';
 import type { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { X, Check, Square } from 'lucide-react';
+import { X, Check, Square, Eraser } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { scaleIn } from '@/lib/animations';
 
 interface PhotoCropperProps {
   imageUrl: string;
   open: boolean;
-  onConfirm: (blob: Blob) => void;
-  onCancel: () => void;
+  onConfirm: (blob: Blob, removeBg: boolean) => void;
+  onCancel: (removeBg: boolean) => void;
 }
 
 function getCroppedBlob(image: HTMLImageElement, crop: PixelCrop): Promise<Blob> {
@@ -44,13 +44,14 @@ export function PhotoCropper({ imageUrl, open, onConfirm, onCancel }: PhotoCropp
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [lockAspect, setLockAspect] = useState(false);
+  const [removeBg, setRemoveBg] = useState(true);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const handleConfirm = useCallback(async () => {
     if (!completedCrop || !imgRef.current) return;
     const blob = await getCroppedBlob(imgRef.current, completedCrop);
-    onConfirm(blob);
-  }, [completedCrop, onConfirm]);
+    onConfirm(blob, removeBg);
+  }, [completedCrop, onConfirm, removeBg]);
 
   return (
     <AnimatePresence>
@@ -60,7 +61,7 @@ export function PhotoCropper({ imageUrl, open, onConfirm, onCancel }: PhotoCropp
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-espresso/60 backdrop-blur-sm p-4"
-          onClick={onCancel}
+          onClick={() => onCancel(removeBg)}
         >
           <motion.div
             variants={scaleIn}
@@ -73,7 +74,7 @@ export function PhotoCropper({ imageUrl, open, onConfirm, onCancel }: PhotoCropp
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-parchment-deep">
               <h3 className="font-display text-lg text-ink">Crop Photo</h3>
-              <button onClick={onCancel} className="p-1 rounded-lg hover:bg-parchment-dark text-ink-muted">
+              <button onClick={() => onCancel(removeBg)} className="p-1 rounded-lg hover:bg-parchment-dark text-ink-muted">
                 <X size={18} />
               </button>
             </div>
@@ -98,18 +99,30 @@ export function PhotoCropper({ imageUrl, open, onConfirm, onCancel }: PhotoCropp
 
             {/* Footer */}
             <div className="flex items-center justify-between p-4 border-t border-parchment-deep">
-              <button
-                type="button"
-                onClick={() => setLockAspect(!lockAspect)}
-                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors ${
-                  lockAspect ? 'bg-terracotta/10 text-terracotta' : 'text-ink-muted hover:bg-parchment-dark'
-                }`}
-              >
-                <Square size={12} />
-                1:1
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLockAspect(!lockAspect)}
+                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                    lockAspect ? 'bg-terracotta/10 text-terracotta' : 'text-ink-muted hover:bg-parchment-dark'
+                  }`}
+                >
+                  <Square size={12} />
+                  1:1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRemoveBg(!removeBg)}
+                  className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                    removeBg ? 'bg-terracotta/10 text-terracotta' : 'text-ink-muted hover:bg-parchment-dark'
+                  }`}
+                >
+                  <Eraser size={12} />
+                  Remove BG
+                </button>
+              </div>
               <div className="flex gap-2">
-                <Button variant="ghost" onClick={onCancel}>Cancel</Button>
+                <Button variant="ghost" onClick={() => onCancel(removeBg)}>Cancel</Button>
                 <Button variant="primary" icon={<Check size={14} />} onClick={handleConfirm} disabled={!completedCrop}>
                   Apply Crop
                 </Button>

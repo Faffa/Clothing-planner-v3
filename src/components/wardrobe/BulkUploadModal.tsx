@@ -8,6 +8,7 @@ import {
   Loader2,
   Sparkles,
   Check,
+  Eraser,
 } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { LAYERS, CLOTHING_COLORS } from '@/types';
@@ -46,6 +47,7 @@ export function BulkUploadModal({ open, onClose, onSubmit }: BulkUploadModalProp
   const [queue, setQueue] = useState<QueuedItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [removeBg, setRemoveBg] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const updateItem = useCallback((id: string, updates: Partial<QueuedItem>) => {
@@ -54,7 +56,7 @@ export function BulkUploadModal({ open, onClose, onSubmit }: BulkUploadModalProp
     ));
   }, []);
 
-  const processFile = useCallback(async (file: File, id: string) => {
+  const processFile = useCallback(async (file: File, id: string, skipBgRemoval: boolean) => {
     const preview = await fileToDataUrl(file);
     const item: QueuedItem = {
       id,
@@ -73,7 +75,7 @@ export function BulkUploadModal({ open, onClose, onSubmit }: BulkUploadModalProp
     try {
       const result = await processImagePipeline(file, preview, (stage) => {
         updateItem(id, { processingStage: stage });
-      });
+      }, { skipBgRemoval });
 
       const processedPhoto = result.bgBlob ?? file;
       const updates: Partial<QueuedItem> = {
@@ -105,9 +107,9 @@ export function BulkUploadModal({ open, onClose, onSubmit }: BulkUploadModalProp
 
     for (const file of imageFiles) {
       const id = crypto.randomUUID();
-      processFile(file, id);
+      processFile(file, id, !removeBg);
     }
-  }, [queue.length, processFile]);
+  }, [queue.length, processFile, removeBg]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -220,6 +222,18 @@ export function BulkUploadModal({ open, onClose, onSubmit }: BulkUploadModalProp
                   />
                 </div>
               )}
+
+              {/* Remove BG toggle */}
+              <button
+                type="button"
+                onClick={() => setRemoveBg(!removeBg)}
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                  removeBg ? 'bg-terracotta/10 text-terracotta' : 'text-ink-muted hover:bg-parchment-dark'
+                }`}
+              >
+                <Eraser size={12} />
+                Remove background
+              </button>
 
               {/* Queue grid */}
               {queue.length > 0 && (

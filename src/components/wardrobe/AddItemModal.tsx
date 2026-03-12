@@ -92,7 +92,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
   }, [open, reset]);
 
   // Run BG removal + AI detection pipeline on a file
-  const runPipeline = useCallback(async (file: File) => {
+  const runPipeline = useCallback(async (file: File, skipBgRemoval = false) => {
     const dataUrl = await fileToDataUrl(file);
     setPreview(dataUrl);
     setOriginalPreview(dataUrl);
@@ -101,10 +101,10 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
     setBgRemoved(false);
     setAiResult(null);
 
-    setProcessing('removing-bg');
+    setProcessing(skipBgRemoval ? 'detecting-ai' : 'removing-bg');
     const result = await processImagePipeline(file, dataUrl, (stage) => {
       setProcessing(stage);
-    });
+    }, { skipBgRemoval });
 
     // Apply results
     if (result.bgBlob && result.bgUrl) {
@@ -188,16 +188,16 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
   };
 
   // Crop confirmed → run pipeline on cropped image (no double BG removal)
-  const handleCropConfirm = useCallback(async (blob: Blob) => {
+  const handleCropConfirm = useCallback(async (blob: Blob, removeBg: boolean) => {
     setCropOpen(false);
     const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
-    runPipeline(file);
+    runPipeline(file, !removeBg);
   }, [runPipeline]);
 
   // Crop skipped → run pipeline on original image (only if not already processed)
-  const handleCropCancel = useCallback(() => {
+  const handleCropCancel = useCallback((removeBg: boolean) => {
     setCropOpen(false);
-    if (processing === 'idle' && originalPhoto) runPipeline(originalPhoto);
+    if (processing === 'idle' && originalPhoto) runPipeline(originalPhoto, !removeBg);
   }, [processing, originalPhoto, runPipeline]);
 
   // Undo background removal
