@@ -133,41 +133,40 @@ Matching Page -> Create Group -> Name + Select Items
 
 ## UI Mockups (ASCII)
 
-### App Layout
+### App Layout (Desktop md+ / Mobile <md)
 ```
-+--+------------------------------------------------------+
-|  |  Header: Page Title              [Search] [Profile]  |
-|  +------------------------------------------------------+
-|S |                                                      |
-|I |                                                      |
-|D |              MAIN CONTENT AREA                       |
-|E |                                                      |
-|B |         (varies by page - see below)                 |
-|A |                                                      |
-|R |                                                      |
-|  |                                                      |
-|  |                                                      |
-+--+------------------------------------------------------+
+Desktop (md+):                        Mobile (<768px):
++--+----------------------------+     +---hamburger--MAISON---+
+|  | Page Title     [Actions]   |     |                       |
+|  +----------------------------+     | Page Title  [Actions] |
+|S |                            |     |                       |
+|I |     MAIN CONTENT           |     |   MAIN CONTENT        |
+|D |                            |     |   (single column,     |
+|E |  (sidebar offsets content  |     |    full width)         |
+|B |   with ml-[260px])         |     |                       |
+|A |                            |     |                       |
+|R |                            |     |                       |
++--+----------------------------+     +-----------------------+
 ```
 
-### Sidebar (Collapsed: icons only | Expanded: icons + labels)
+### Sidebar (Collapsed | Expanded | Mobile Drawer)
 ```
-+--------+          +--+
-| MAISON |          |Ma|
-|--------|          |--|
-| [] Dash|          |[]|
-| [] Ward|          |[]|
-| [] Plan|          |[]|
-| [] Match|         |[]|
-| [] Rules|         |[]|
-|        |          |  |
-|--------|          |--|
-| Sarah  |          |  |
-| Helsinki|         |  |
-| [] Sett|          |[]|
-| [] Sign |         |[]|
-+--------+          +--+
- expanded           collapsed
++--------+          +--+          Mobile (<768px):
+| MAISON |          |Ma|          +--hamburger--MAISON--+
+|--------|          |--|          |                      |
+| [] Dash|          |[]|          (tap hamburger)
+| [] Ward|          |[]|                |
+| [] Plan|          |[]|          +overlay-----------+
+| [] Match|         |[]|          |+--------+        |
+| [] Rules|         |[]|          || MAISON |  (dim) |
+|        |          |  |          ||--------|        |
+|--------|          |--|          || [] Dash|        |
+| Sarah  |          |  |          || [] Ward|        |
+| Helsinki|         |  |          || ...    |        |
+| [] Sett|          |[]|          |+--------+        |
+| [] Sign |         |[]|          +------------------+
++--------+          +--+           slides from left
+ expanded           collapsed      260px, always expanded
 ```
 
 ### Dashboard Page

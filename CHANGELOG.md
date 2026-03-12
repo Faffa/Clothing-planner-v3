@@ -2,6 +2,31 @@
 
 All notable changes to Maison (Clothing Planner v3) will be documented in this file.
 
+## [0.8.0] - 2026-03-12
+
+### Added
+- **Mobile Responsiveness**: Full mobile/tablet support across all pages and modals
+- `src/hooks/useMediaQuery.ts` — lightweight `matchMedia` hook for responsive logic
+- `src/hooks/useMobileMenu.ts` — mobile drawer state with auto-close on resize/route change
+- **Sidebar mobile drawer**: slides in from left with overlay backdrop; closes on nav click, overlay click, resize above 768px, and route change; collapse toggle hidden on mobile
+- **Mobile top bar** (`md:hidden`): hamburger menu + MAISON logo, fixed at top with `h-14`
+- **Touch drag-drop**: `TouchSensor` added to PlannerPage DndContext (200ms delay, 5px tolerance) for mobile drag support alongside existing `PointerSensor`
+
+### Changed
+- **AppLayout**: `ml-[260px]` → `md:ml-[260px]`; padding `p-4 md:p-8`; top offset `pt-18 md:pt-8` for mobile top bar
+- **LoginPage**: flex direction `flex-col md:flex-row`; responsive padding/heading sizes; right panel `w-full md:w-[480px]`
+- **DashboardPage**: grid `grid-cols-1 md:grid-cols-12`; all `col-span-*` prefixed with `md:`; outfit grid `grid-cols-3 md:grid-cols-5`
+- **WardrobePage**: header stacks on mobile (`flex-col sm:flex-row`); search input `w-full sm:w-44`; selection toolbar `flex-wrap`
+- **PlannerPage**: day grid `grid-cols-1 sm:grid-cols-2 lg:grid-cols-5/7`; header stacks on mobile; nav buttons padded for 44px touch targets; button labels shortened on mobile
+- **MatchingPage**: groups grid `grid-cols-1 sm:grid-cols-2`; compatibility add row stacks on mobile
+- **RulesPage**: header stacks on mobile; wear limit rows stack vertically on mobile; color clash row responsive
+- **SettingsPage**: preference rows stack on mobile; data buttons `flex-wrap`
+- **All modals**: padding `p-3 sm:p-5`; form grids `grid-cols-1 sm:grid-cols-2`; item grids `grid-cols-2 sm:grid-cols-3`; suggestions grid adds `sm:grid-cols-2` intermediate breakpoint
+
+### New Files
+- `src/hooks/useMediaQuery.ts`
+- `src/hooks/useMobileMenu.ts`
+
 ## [0.7.0] - 2026-03-11
 
 ### Added

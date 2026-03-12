@@ -137,7 +137,7 @@ export function WardrobePage() {
   return (
     <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-6xl">
       {/* Header */}
-      <motion.div variants={fadeUp} className="flex items-end justify-between mb-6">
+      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-end gap-3 sm:justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl text-ink">My Wardrobe</h1>
           <p className="text-ink-muted text-sm mt-1">{items.length} items &middot; {items.filter(i => !i.is_clean).length} in laundry</p>
@@ -161,7 +161,7 @@ export function WardrobePage() {
       {selectionMode && (
         <motion.div
           variants={fadeUp}
-          className="flex items-center gap-3 mb-4 p-3 bg-terracotta/5 border border-terracotta/20 rounded-xl"
+          className="flex flex-wrap items-center gap-3 mb-4 p-3 bg-terracotta/5 border border-terracotta/20 rounded-xl"
         >
           <button onClick={selectAll} className="flex items-center gap-1.5 text-xs text-ink hover:text-terracotta transition-colors">
             <CheckSquare size={14} />
@@ -172,7 +172,7 @@ export function WardrobePage() {
             Deselect All
           </button>
           <span className="text-xs text-ink-muted">{selectedIds.size} selected</span>
-          <div className="ml-auto flex gap-2">
+          <div className="w-full sm:w-auto sm:ml-auto flex gap-2">
             {selectedIds.size > 0 && (
               <>
                 <Button
@@ -210,7 +210,7 @@ export function WardrobePage() {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search items..."
-            className="text-xs bg-white border border-parchment-deep rounded-lg pl-8 pr-3 py-2 text-ink w-44 focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta"
+            className="text-xs bg-white border border-parchment-deep rounded-lg pl-8 pr-3 py-2 text-ink w-full sm:w-44 focus:outline-none focus:ring-2 focus:ring-terracotta/30 focus:border-terracotta"
           />
         </div>
 

@@ -5,9 +5,9 @@ export function LoginPage() {
   const { signInWithGoogle } = useAuth();
 
   return (
-    <div className="min-h-screen bg-espresso flex">
+    <div className="min-h-screen bg-espresso flex flex-col md:flex-row">
       {/* Left - Branding */}
-      <div className="flex-1 flex flex-col justify-center px-16 relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center px-6 md:px-16 py-12 md:py-0 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta/5 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
@@ -18,7 +18,7 @@ export function LoginPage() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative z-10"
         >
-          <h1 className="font-display text-6xl text-gold tracking-[0.2em] uppercase mb-4">
+          <h1 className="font-display text-4xl md:text-6xl text-gold tracking-[0.2em] uppercase mb-4">
             Maison
           </h1>
           <p className="text-parchment-dark/50 text-lg font-light max-w-md leading-relaxed">
@@ -31,7 +31,7 @@ export function LoginPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.8 }}
-          className="mt-16 flex gap-12 text-parchment-dark/30 text-xs uppercase tracking-[0.2em] relative z-10"
+          className="mt-16 flex gap-6 md:gap-12 text-parchment-dark/30 text-xs uppercase tracking-[0.2em] relative z-10"
         >
           <span>Wardrobe</span>
           <span>Planning</span>
@@ -40,7 +40,7 @@ export function LoginPage() {
       </div>
 
       {/* Right - Sign In */}
-      <div className="w-[480px] bg-parchment flex flex-col justify-center px-16 relative">
+      <div className="w-full md:w-[480px] bg-parchment flex flex-col justify-center px-6 md:px-16 py-12 md:py-0 relative">
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}

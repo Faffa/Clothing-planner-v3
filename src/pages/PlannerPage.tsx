@@ -24,6 +24,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   useDroppable,
@@ -140,6 +141,7 @@ export function PlannerPage() {
   // DnD sensors - 8px activation distance to avoid click conflicts
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
   );
 
   const toggleWeekend = () => {
@@ -288,21 +290,22 @@ export function PlannerPage() {
   return (
     <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-7xl">
       {/* Header */}
-      <motion.div variants={fadeUp} className="flex items-end justify-between mb-6">
+      <motion.div variants={fadeUp} className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl text-ink">Weekly Planner</h1>
           <p className="text-ink-muted text-sm mt-1">
             Plan your outfits for the week ahead
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {isAIAvailable() && (
             <Button
               variant="ghost"
               icon={<Wand2 size={16} />}
               onClick={() => setSuggestionsOpen(true)}
             >
-              Suggestions
+              <span className="hidden md:inline">Suggestions</span>
+              <span className="md:hidden">Suggest</span>
             </Button>
           )}
           <Button
@@ -310,7 +313,8 @@ export function PlannerPage() {
             icon={<LayoutTemplate size={16} />}
             onClick={() => { setApplyTargetDay(null); setTemplatesOpen(true); }}
           >
-            Templates
+            <span className="hidden md:inline">Templates</span>
+            <span className="md:hidden">Tmpl</span>
           </Button>
           {isViewingPast && (
             <Button
@@ -366,7 +370,7 @@ export function PlannerPage() {
       <motion.div variants={fadeUp} className="flex items-center justify-between mb-6">
         <button
           onClick={planner.goToPrevWeek}
-          className="p-2 rounded-lg hover:bg-parchment-dark text-ink-muted hover:text-ink transition-colors"
+          className="p-3 md:p-2 rounded-lg hover:bg-parchment-dark text-ink-muted hover:text-ink transition-colors"
         >
           <ChevronLeft size={20} />
         </button>
@@ -392,7 +396,7 @@ export function PlannerPage() {
           </button>
           <button
             onClick={planner.goToNextWeek}
-            className="p-2 rounded-lg hover:bg-parchment-dark text-ink-muted hover:text-ink transition-colors"
+            className="p-3 md:p-2 rounded-lg hover:bg-parchment-dark text-ink-muted hover:text-ink transition-colors"
           >
             <ChevronRight size={20} />
           </button>
@@ -441,7 +445,7 @@ export function PlannerPage() {
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <div className={`grid gap-3 ${showWeekend ? 'grid-cols-7' : 'grid-cols-5'}`}>
+          <div className={`grid gap-3 grid-cols-1 sm:grid-cols-2 ${showWeekend ? 'lg:grid-cols-7' : 'lg:grid-cols-5'}`}>
             {(showWeekend ? plan.days : plan.days.slice(0, 5)).map((day) => {
               // Use the real index in plan.days for swap/regen operations
               const realIndex = plan.days.indexOf(day);

@@ -66,7 +66,7 @@ REQ-082,Layers,Accessories Layer,Add accessories (watch/belt/jewelry),Medium,Don
 REQ-083,Layers,Bag Layer,Add bags/purses layer,Medium,Done,Phase1,Separate layer from accessories in LAYERS constant;
 REQ-084,Layers,Custom Layers,User-defined layer types,Low,Planned,Phase4,;
 ;
-REQ-090,UI,Responsive Design,Desktop-first layout with Maison design system sidebar,High,Done,Phase1,AppLayout + Sidebar; Playfair Display + DM Sans + parchment/espresso/terracotta;
+REQ-090,UI,Responsive Design,Desktop-first layout with Maison design system sidebar; mobile drawer sidebar + hamburger top bar below 768px,High,Done,Phase1,AppLayout + Sidebar; Playfair Display + DM Sans + parchment/espresso/terracotta; useMediaQuery + useMobileMenu hooks; mobile drawer with overlay; responsive grids on all pages and modals; touch drag-drop support;
 REQ-091,UI,Background Grain Texture,Subtle noise overlay for tactile depth,Medium,Done,Phase1,CSS SVG noise pattern in globals.css body::before;
 REQ-092,UI,Page Transitions,Animated page transitions between routes,Medium,Done,Phase1,Framer Motion fadeUp variants in AppLayout;
 REQ-093,UI,Skeleton Loaders,Loading states for async content,Medium,Done,Phase1,Skeleton + CardSkeleton + ClothingCardSkeleton components;

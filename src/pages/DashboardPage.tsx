@@ -67,7 +67,7 @@ export function DashboardPage() {
     <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-6xl">
       {/* Header */}
       <motion.div variants={fadeUp} className="mb-8">
-        <h1 className="font-display text-3xl text-ink mb-1">
+        <h1 className="font-display text-2xl md:text-3xl text-ink mb-1">
           {greeting}, {profile?.display_name || 'there'}
         </h1>
         <p className="text-ink-muted text-sm">
@@ -76,12 +76,12 @@ export function DashboardPage() {
       </motion.div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
 
         {/* Today's Outfit - Large Card */}
         <motion.div
           variants={fadeUp}
-          className="col-span-8 bg-white rounded-2xl shadow-maison overflow-hidden"
+          className="md:col-span-8 bg-white rounded-2xl shadow-maison overflow-hidden"
         >
           <div className="p-6 pb-4 flex items-center justify-between">
             <div>
@@ -101,13 +101,13 @@ export function DashboardPage() {
 
           <div className="px-6 pb-6">
             {isLoading ? (
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton key={i} className="aspect-square rounded-xl" />
                 ))}
               </div>
             ) : todayOutfit ? (
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
                 {todayOutfit.map(([layer, item], i) => (
                   <motion.div
                     key={layer}
@@ -147,7 +147,7 @@ export function DashboardPage() {
         {/* Weather Widget */}
         <motion.div
           variants={fadeUp}
-          className="col-span-4 bg-gradient-to-br from-espresso to-espresso-light rounded-2xl shadow-maison p-6 text-parchment flex flex-col justify-between"
+          className="md:col-span-4 bg-gradient-to-br from-espresso to-espresso-light rounded-2xl shadow-maison p-6 text-parchment flex flex-col justify-between"
         >
           <div>
             <div className="flex items-start justify-between">
@@ -165,7 +165,7 @@ export function DashboardPage() {
         {/* Weekly Summary */}
         <motion.div
           variants={fadeUp}
-          className="col-span-5 bg-white rounded-2xl shadow-maison p-6"
+          className="md:col-span-5 bg-white rounded-2xl shadow-maison p-6"
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg text-ink">This Week</h2>
@@ -211,7 +211,7 @@ export function DashboardPage() {
         {/* Quick Actions */}
         <motion.div
           variants={fadeUp}
-          className="col-span-3 bg-white rounded-2xl shadow-maison p-6"
+          className="md:col-span-3 bg-white rounded-2xl shadow-maison p-6"
         >
           <h2 className="font-display text-lg text-ink mb-4">Quick Actions</h2>
           <div className="flex flex-col gap-2">
@@ -240,7 +240,7 @@ export function DashboardPage() {
         {/* Wardrobe Stats */}
         <motion.div
           variants={fadeUp}
-          className="col-span-4 bg-white rounded-2xl shadow-maison p-6"
+          className="md:col-span-4 bg-white rounded-2xl shadow-maison p-6"
         >
           <h2 className="font-display text-lg text-ink mb-4">Wardrobe</h2>
           {isLoading ? (

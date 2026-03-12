@@ -54,7 +54,7 @@ src/
     dashboard/       # (planned) DashboardWidgets, TodayOutfit
   pages/             # DashboardPage, WardrobePage, PlannerPage, MatchingPage, RulesPage, SettingsPage, LoginPage
   services/          # wardrobeService, rulesService, matchingService, imageProcessingService, backupService, planService, generatorService
-  hooks/             # useWardrobe, useRules, useMatching, usePlanner
+  hooks/             # useWardrobe, useRules, useMatching, usePlanner, useMediaQuery, useMobileMenu
   types/             # TypeScript interfaces, enums, constants (Layer, ClothingItem, BackupData, etc.)
   lib/               # animations.ts, constants.ts
   styles/            # globals.css (Tailwind + @theme tokens + grain texture)
@@ -78,6 +78,16 @@ src/
 black, white, gray, navy, blue, light-blue, teal, green, olive, khaki,
 brown, tan, beige, cream, burgundy, red, coral, pink, purple, lavender, yellow, multi
 
+## Mobile Responsiveness
+- **Primary breakpoint:** `md:` (768px) — below this, sidebar becomes a drawer and layouts go single-column
+- **Sidebar:** Desktop: fixed with collapse toggle. Mobile: hidden, slides in from left as overlay drawer via `useMobileMenu`
+- **Mobile top bar:** `md:hidden` fixed bar with hamburger + MAISON logo, `h-14`
+- **Layout offset:** `md:ml-[260px]` (no left margin on mobile), `p-4 md:p-8`, `pt-18 md:pt-8`
+- **Touch support:** PlannerPage uses both `PointerSensor` (8px) and `TouchSensor` (200ms delay, 5px tolerance)
+- **Responsive grids:** Pages use `grid-cols-1 md:grid-cols-12`, `sm:grid-cols-2`, `lg:grid-cols-5/7`
+- **Modals:** Padding `p-3 sm:p-5`, form grids `grid-cols-1 sm:grid-cols-2`, item grids `grid-cols-2 sm:grid-cols-3`
+- **Headers:** Stack vertically on mobile via `flex-col sm:flex-row` or `flex-col md:flex-row`
+
 ## Key Patterns
 - All Supabase tables will use RLS (Row-Level Security)
 - Auth via Google OAuth with PKCE flow (currently demo user in AuthContext)
@@ -86,7 +96,7 @@ brown, tan, beige, cream, burgundy, red, coral, pink, purple, lavender, yellow, 
 - Skeleton loaders for all async content (Skeleton component)
 - All forms validate before submission (react-hook-form installed)
 - Path alias `@/` maps to `src/` (configured in tsconfig.app.json + vite.config.ts)
-- Drag-drop in PlannerPage via `@dnd-kit/core` (PointerSensor with 8px activation distance)
+- Drag-drop in PlannerPage via `@dnd-kit/core` (PointerSensor + TouchSensor for mobile)
 - Bulk operations batch API calls in groups of 10 (Promise.all) to avoid rate limits
 - Backup export/import via `backupService.ts` — generates new UUIDs on import, remaps references
 - Dashboard is data-driven: uses `useWardrobe`, `useRules`, `usePlanner` for real stats

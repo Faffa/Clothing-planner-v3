@@ -126,7 +126,7 @@ export function EditItemModal({ open, item, onClose, onSave, onDelete }: EditIte
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onFormSubmit)} className="p-5 space-y-4">
+            <form onSubmit={handleSubmit(onFormSubmit)} className="p-3 sm:p-5 space-y-4">
               {/* Photo */}
               <div
                 onClick={() => fileRef.current?.click()}
@@ -154,7 +154,7 @@ export function EditItemModal({ open, item, onClose, onSave, onDelete }: EditIte
               </div>
 
               {/* Layer + Color */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-ink-muted block mb-1">Layer</label>
                   <select
@@ -180,7 +180,7 @@ export function EditItemModal({ open, item, onClose, onSave, onDelete }: EditIte
               </div>
 
               {/* Temperature */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-ink-muted block mb-1">Temp min (&deg;C)</label>
                   <input

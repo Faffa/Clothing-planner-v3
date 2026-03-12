@@ -22,7 +22,7 @@ export function RulesPage() {
 
   return (
     <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-4xl">
-      <motion.div variants={fadeUp} className="flex items-end justify-between mb-6">
+      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-end gap-3 sm:justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl text-ink">Wearing Rules</h1>
           <p className="text-ink-muted text-sm mt-1">Configure limits for outfit generation</p>
@@ -46,8 +46,8 @@ export function RulesPage() {
 
         <div className="space-y-3">
           {rules.map(rule => (
-            <div key={rule.layer} className="flex items-center gap-4 py-3 border-b border-parchment-dark/40 last:border-0">
-              <span className="w-28 text-sm font-medium text-ink">
+            <div key={rule.layer} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-parchment-dark/40 last:border-0">
+              <span className="w-full sm:w-28 text-sm font-medium text-ink">
                 {LAYER_LABELS[rule.layer as Layer]}
               </span>
 
@@ -104,7 +104,7 @@ export function RulesPage() {
         </div>
 
         {addingClash ? (
-          <div className="flex items-center gap-2 mt-3 p-3 bg-parchment/50 rounded-lg">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-3 p-3 bg-parchment/50 rounded-lg">
             <select
               value={newClashA}
               onChange={e => setNewClashA(e.target.value as ClothingColor)}

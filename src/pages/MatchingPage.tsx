@@ -56,7 +56,7 @@ export function MatchingPage() {
 
       {/* Loading */}
       {loading && (
-        <div className="grid grid-cols-2 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
           {[1, 2, 3, 4].map(i => (
             <Skeleton key={i} className="h-32 rounded-xl" />
           ))}
@@ -76,7 +76,7 @@ export function MatchingPage() {
 
       {/* Groups Grid */}
       {!loading && groups.length > 0 && (
-        <motion.div variants={stagger} className="grid grid-cols-2 gap-4 mb-10">
+        <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
           {groups.map(group => {
             const groupItems = group.item_ids
               .map(id => itemMap.get(id))
@@ -189,7 +189,7 @@ export function MatchingPage() {
 
               {/* Add compatibility */}
               {groups.length >= 2 && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <select
                     value={compatA}
                     onChange={e => setCompatA(e.target.value)}

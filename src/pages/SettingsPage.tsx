@@ -117,7 +117,7 @@ export function SettingsPage() {
       <motion.div variants={fadeUp} className="bg-white rounded-xl shadow-maison p-6 mb-4">
         <h2 className="font-display text-lg text-ink mb-4">Preferences</h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-2">
               <Thermometer size={16} className="text-ink-muted" />
               <span className="text-sm text-ink">Temperature Unit</span>
@@ -127,7 +127,7 @@ export function SettingsPage() {
               <option value="fahrenheit">Fahrenheit (&deg;F)</option>
             </select>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-2">
               <Calendar size={16} className="text-ink-muted" />
               <span className="text-sm text-ink">Week Starts On</span>
@@ -143,7 +143,7 @@ export function SettingsPage() {
       {/* Data */}
       <motion.div variants={fadeUp} className="bg-white rounded-xl shadow-maison p-6 mb-4">
         <h2 className="font-display text-lg text-ink mb-4">Data</h2>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button
             variant="ghost"
             size="sm"

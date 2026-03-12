@@ -224,6 +224,7 @@ export function BulkUploadModal({ open, onClose, onSubmit }: BulkUploadModalProp
               {/* Queue grid */}
               {queue.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+
                   {queue.map(item => (
                     <div
                       key={item.id}

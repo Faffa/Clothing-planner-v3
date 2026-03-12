@@ -269,7 +269,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit(onFormSubmit)} className="p-5 space-y-4">
+              <form onSubmit={handleSubmit(onFormSubmit)} className="p-3 sm:p-5 space-y-4">
                 {/* Photo Upload Zone */}
                 <div
                   onDragOver={handleDragOver}
@@ -415,7 +415,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
                 </div>
 
                 {/* Layer + Color row */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs font-medium text-ink-muted block mb-1">Layer *</label>
                     <select
@@ -441,7 +441,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
                 </div>
 
                 {/* Temperature range */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs font-medium text-ink-muted block mb-1">Temp min (&deg;C)</label>
                     <input

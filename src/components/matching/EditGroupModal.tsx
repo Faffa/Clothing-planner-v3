@@ -136,7 +136,7 @@ export function EditGroupModal({ open, group, items, onClose, onSave, onDelete }
               </div>
 
               {/* Item grid */}
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {filteredItems.map(item => {
                   const selected = selectedIds.has(item.id);
                   return (
