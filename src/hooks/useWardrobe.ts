@@ -40,10 +40,11 @@ export function useWardrobe() {
   const useLocal = useRef(!isSupabaseConfigured);
 
   const load = useCallback(async () => {
+    if (!user) return;
     setLoading(true);
     try {
       if (isSupabaseConfigured && !useLocal.current) {
-        const data = await withTimeout(wardrobeService.getItems(), 8000);
+        const data = await withTimeout(wardrobeService.getItems(user.id), 8000);
         setItems(data);
       } else {
         setItems(DEMO_ITEMS);
@@ -55,7 +56,7 @@ export function useWardrobe() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => { load(); }, [load]);
 

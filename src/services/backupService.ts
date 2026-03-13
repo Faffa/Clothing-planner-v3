@@ -7,7 +7,7 @@ const BACKUP_VERSION = '1.0.0';
 
 export async function exportData(userId: string): Promise<BackupData> {
   const [wardrobe, matchingGroups, compatibilities, wearingRules, colorClashes] = await Promise.all([
-    wardrobeService.getItems().catch(() => [] as ClothingItem[]),
+    wardrobeService.getItems(userId).catch(() => [] as ClothingItem[]),
     matchingService.getMatchingGroups(userId),
     matchingService.getCompatibilities(userId),
     rulesService.getWearingRules(userId),
