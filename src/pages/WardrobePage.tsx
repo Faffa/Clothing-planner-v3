@@ -14,6 +14,7 @@ import {
   X,
   Pencil,
   Trash2,
+  Eraser,
 } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { ClothingCard } from '@/components/wardrobe/ClothingCard';
@@ -28,7 +29,8 @@ import type { Layer, ClothingItem } from '@/types';
 import { LAYER_LABELS } from '@/lib/constants';
 import { stagger, fadeUp } from '@/lib/animations';
 import { ClothingCardSkeleton } from '@/components/common/Skeleton';
-import { preloadBackgroundRemoval } from '@/services/imageProcessingService';
+import { preloadBackgroundRemoval, removeBackground, fileToDataUrl } from '@/services/imageProcessingService';
+import { useToast } from '@/contexts/ToastContext';
 
 type SortOption = 'recent' | 'name' | 'most-worn' | 'by-layer';
 
@@ -49,6 +51,8 @@ export function WardrobePage() {
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
   const [retakeItem, setRetakeItem] = useState<ClothingItem | null>(null);
+  const [bgRemovalProgress, setBgRemovalProgress] = useState<{ current: number; total: number } | null>(null);
+  const { showToast } = useToast();
 
   // Preload WASM for background removal while user browses wardrobe
   useEffect(() => { preloadBackgroundRemoval(); }, []);
@@ -129,6 +133,37 @@ export function WardrobePage() {
     exitSelectionMode();
   };
 
+  const handleBulkRemoveBg = async () => {
+    const withPhotos = selectedItems.filter(i => i.photo_url);
+    if (withPhotos.length === 0) {
+      showToast('No items with photos selected');
+      return;
+    }
+    setBgRemovalProgress({ current: 0, total: withPhotos.length });
+    let succeeded = 0;
+    for (const item of withPhotos) {
+      try {
+        const response = await fetch(item.photo_url!);
+        const blob = await response.blob();
+        const file = new File([blob], 'photo.jpg', { type: blob.type || 'image/jpeg' });
+        const bgBlob = await removeBackground(file);
+        const newUrl = await fileToDataUrl(bgBlob);
+        await editItem(item.id, { photo_url: newUrl });
+        succeeded++;
+      } catch (err) {
+        console.warn(`BG removal failed for ${item.name}:`, err);
+      }
+      setBgRemovalProgress(prev => prev ? { ...prev, current: prev.current + 1 } : null);
+    }
+    setBgRemovalProgress(null);
+    const failed = withPhotos.length - succeeded;
+    showToast(
+      failed > 0
+        ? `Background removed from ${succeeded} items (${failed} failed)`
+        : `Background removed from ${succeeded} items`,
+    );
+  };
+
   const selectedItems = useMemo(
     () => items.filter(i => selectedIds.has(i.id)),
     [items, selectedIds],
@@ -180,20 +215,33 @@ export function WardrobePage() {
                   size="sm"
                   icon={<Pencil size={14} />}
                   onClick={() => setBulkEditOpen(true)}
+                  disabled={!!bgRemovalProgress}
                 >
                   Edit Selected
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Eraser size={14} />}
+                  onClick={handleBulkRemoveBg}
+                  disabled={!!bgRemovalProgress}
+                >
+                  {bgRemovalProgress
+                    ? `Removing BG (${bgRemovalProgress.current}/${bgRemovalProgress.total})...`
+                    : 'Remove BG'}
                 </Button>
                 <Button
                   variant="danger"
                   size="sm"
                   icon={<Trash2 size={14} />}
                   onClick={handleBulkDelete}
+                  disabled={!!bgRemovalProgress}
                 >
                   {confirmBulkDelete ? `Confirm Delete (${selectedIds.size})` : 'Delete Selected'}
                 </Button>
               </>
             )}
-            <Button variant="ghost" size="sm" icon={<X size={14} />} onClick={exitSelectionMode}>
+            <Button variant="ghost" size="sm" icon={<X size={14} />} onClick={exitSelectionMode} disabled={!!bgRemovalProgress}>
               Cancel
             </Button>
           </div>

@@ -2,6 +2,16 @@
 
 All notable changes to Maison (Clothing Planner v3) will be documented in this file.
 
+## [0.8.1] - 2026-03-13
+
+### Added
+- **Bulk Remove Background**: Select items in wardrobe and remove backgrounds in bulk using the existing @imgly/background-removal WASM pipeline
+  - New "Remove BG" button in selection toolbar (Eraser icon)
+  - Sequential processing with live progress indicator ("Removing BG 2/5...")
+  - All other toolbar actions disabled during processing to prevent conflicts
+  - Skips items without photos; reports failures in toast
+  - WASM preloaded on wardrobe mount for faster first run
+
 ## [0.8.0] - 2026-03-12
 
 ### Added

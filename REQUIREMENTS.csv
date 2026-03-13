@@ -99,7 +99,7 @@ REQ-170,Dashboard,Dashboard Page,Home page with outfit/weather/summary/actions/s
 ;
 REQ-180,Processing,Deferred Processing,Async image processing queue for bulk uploads,Medium,Planned,Phase3,ProcessingQueueContext;
 REQ-181,Processing,AI Metadata,AI-suggested name/layer/color from photos,Medium,Planned,Phase3,BulkUpload AI categorization pipeline;
-REQ-182,Processing,Background Removal,Client-side ML background removal from photos,Medium,UI-Done,Phase1,@imgly/background-removal WASM; auto-runs on upload in AddItemModal and BulkUploadModal;
+REQ-182,Processing,Background Removal,Client-side ML background removal from photos,Medium,Done,Phase1,@imgly/background-removal WASM; auto-runs on upload in AddItemModal and BulkUploadModal; bulk Remove BG in wardrobe selection toolbar;
 ;
 REQ-190,Monitoring,Error Tracking,Centralized error logging,Medium,Planned,Phase4,Sentry not yet integrated;
 REQ-192,Monitoring,Performance Monitoring,Core Web Vitals and runtime performance tracking,Low,Planned,Phase4,;
