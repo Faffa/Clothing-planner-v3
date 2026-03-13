@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -27,7 +27,7 @@ import { useWardrobe } from '@/hooks/useWardrobe';
 import { LAYERS } from '@/types';
 import type { Layer, ClothingItem } from '@/types';
 import { LAYER_LABELS } from '@/lib/constants';
-import { stagger, staggerFast, fadeUp } from '@/lib/animations';
+import { fadeUp } from '@/lib/animations';
 import { ClothingCardSkeleton } from '@/components/common/Skeleton';
 import { removeBackground, fileToDataUrl } from '@/services/imageProcessingService';
 import { useToast } from '@/contexts/ToastContext';
@@ -167,10 +167,19 @@ export function WardrobePage() {
     [items, selectedIds],
   );
 
+  // Stable callbacks for ClothingCard (avoids re-render of all cards)
+  const handleCardClick = useCallback((item: ClothingItem) => {
+    setEditingItem(item);
+  }, []);
+
+  const handleRetakePhoto = useCallback((id: string) => {
+    setRetakeItem(items.find(i => i.id === id) ?? null);
+  }, [items]);
+
   return (
-    <motion.div variants={stagger} initial="initial" animate="animate" className="max-w-6xl">
+    <div className="max-w-6xl">
       {/* Header */}
-      <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-end gap-3 sm:justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl text-ink">My Wardrobe</h1>
           <p className="text-ink-muted text-sm mt-1">{items.length} items &middot; {items.filter(i => !i.is_clean).length} in laundry</p>
@@ -188,12 +197,11 @@ export function WardrobePage() {
             Add Item
           </Button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Selection Toolbar */}
       {selectionMode && (
-        <motion.div
-          variants={fadeUp}
+        <div
           className="flex flex-wrap items-center gap-3 mb-4 p-3 bg-terracotta/5 border border-terracotta/20 rounded-xl"
         >
           <button onClick={selectAll} className="flex items-center gap-1.5 text-xs text-ink hover:text-terracotta transition-colors">
@@ -243,11 +251,11 @@ export function WardrobePage() {
               Cancel
             </Button>
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Filters Bar */}
-      <motion.div variants={fadeUp} className="flex items-center gap-3 mb-6 flex-wrap">
+      <div className="flex items-center gap-3 mb-6 flex-wrap">
         {/* Search */}
         <div className="relative">
           <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-muted/50" />
@@ -315,7 +323,7 @@ export function WardrobePage() {
             <List size={14} />
           </button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Loading */}
       {loading && (
@@ -328,33 +336,30 @@ export function WardrobePage() {
 
       {/* Grid */}
       {!loading && hasResults && (
-        <motion.div
-          variants={filtered.length > 20 ? staggerFast : stagger}
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
-        >
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {filtered.map(item => (
             <ClothingCard
               key={item.id}
               item={item}
-              onClick={() => setEditingItem(item)}
+              onClick={() => handleCardClick(item)}
               selectable={selectionMode}
               selected={selectedIds.has(item.id)}
               onSelect={toggleSelect}
-              onRetakePhoto={(id) => setRetakeItem(items.find(i => i.id === id) ?? null)}
+              onRetakePhoto={handleRetakePhoto}
             />
           ))}
-        </motion.div>
+        </div>
       )}
 
       {!loading && !hasResults && (
-        <motion.div variants={fadeUp} className="text-center py-20">
+        <div className="text-center py-20">
           <Shirt size={48} className="mx-auto text-ink-muted/30 mb-4" />
           <p className="text-ink-muted text-sm">
             {isSearching && hasItems
               ? 'No items match your search or filters'
               : 'No items in your wardrobe yet'}
           </p>
-        </motion.div>
+        </div>
       )}
 
       {/* Modals */}
@@ -387,6 +392,6 @@ export function WardrobePage() {
         onClose={() => setRetakeItem(null)}
         onSave={editItem}
       />
-    </motion.div>
+    </div>
   );
 }

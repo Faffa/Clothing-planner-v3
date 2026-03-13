@@ -1,6 +1,5 @@
-import { motion } from 'framer-motion';
+import { memo } from 'react';
 import { Shirt, Sparkle, WashingMachine, Check, Camera } from 'lucide-react';
-import { fadeUp } from '@/lib/animations';
 import { LAYER_LABELS } from '@/lib/constants';
 import { CLOTHING_COLORS } from '@/types';
 import type { ClothingItem, ClothingColor } from '@/types';
@@ -18,18 +17,16 @@ function getColorHex(color: ClothingColor): string {
   return CLOTHING_COLORS.find(c => c.value === color)?.hex || '#ccc';
 }
 
-export function ClothingCard({ item, onClick, selectable, selected, onSelect, onRetakePhoto }: ClothingCardProps) {
+export const ClothingCard = memo(function ClothingCard({ item, onClick, selectable, selected, onSelect, onRetakePhoto }: ClothingCardProps) {
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onSelect?.(item.id);
   };
 
   return (
-    <motion.div
-      variants={fadeUp}
-      whileHover={{ y: -4 }}
+    <div
       onClick={selectable ? handleCheckboxClick : onClick}
-      className={`group bg-white rounded-xl overflow-hidden shadow-maison hover:shadow-maison-md transition-all duration-300 cursor-pointer ${
+      className={`group bg-white rounded-xl overflow-hidden shadow-maison hover:shadow-maison-md transition-all duration-300 cursor-pointer hover:-translate-y-1 ${
         selected ? 'ring-2 ring-terracotta shadow-maison-md' : ''
       }`}
     >
@@ -117,6 +114,6 @@ export function ClothingCard({ item, onClick, selectable, selected, onSelect, on
           </span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Trash2, ImagePlus, ChevronDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -44,6 +44,16 @@ export function EditItemModal({ open, item, onClose, onSave, onDelete }: EditIte
   const [ruleOpen, setRuleOpen] = useState(false);
   const [ruleOverride, setRuleOverride] = useState<ItemRuleOverride | null>(item?.rule_override ?? null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Reset transient state when item changes or modal closes
+  useEffect(() => {
+    setPhoto(null);
+    setPreview(null);
+    setSubmitting(false);
+    setConfirmDelete(false);
+    setRuleOpen(false);
+    setRuleOverride(item?.rule_override ?? null);
+  }, [item]);
 
   if (!item) return null;
 
