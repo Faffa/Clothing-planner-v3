@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import {
   Plus,
   Filter,
@@ -27,7 +26,6 @@ import { useWardrobe } from '@/hooks/useWardrobe';
 import { LAYERS } from '@/types';
 import type { Layer, ClothingItem } from '@/types';
 import { LAYER_LABELS } from '@/lib/constants';
-import { fadeUp } from '@/lib/animations';
 import { ClothingCardSkeleton } from '@/components/common/Skeleton';
 import { removeBackground, fileToDataUrl } from '@/services/imageProcessingService';
 import { useToast } from '@/contexts/ToastContext';
