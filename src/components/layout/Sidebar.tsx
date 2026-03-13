@@ -185,7 +185,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-30 bg-espresso/50 backdrop-blur-sm"
+              className="fixed inset-0 z-30 bg-espresso/50"
               onClick={onMobileClose}
             />
             {/* Sidebar sliding in */}

@@ -185,7 +185,7 @@ export function OnboardingPage() {
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
-                          className="absolute top-2 right-2 bg-parchment/90 backdrop-blur-sm rounded-lg p-1.5 text-ink-muted hover:text-ink"
+                          className="absolute top-2 right-2 bg-parchment/90 rounded-lg p-1.5 text-ink-muted hover:text-ink"
                         >
                           <ImagePlus size={14} />
                         </button>

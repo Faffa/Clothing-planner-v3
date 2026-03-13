@@ -13,7 +13,11 @@
       "Bash(curl:*)",
       "Bash(xargs grep:*)",
       "Bash(source .env:*)",
-      "Bash(find \"C:\\\\Users\\\\admin\\\\Documents\\\\Clothing planner v3\\\\src\" -name \"*backup*\" -o -name \"*export*\" -o -name \"*import*\" 2>/dev/null | head -20)"
+      "Bash(find \"C:\\\\Users\\\\admin\\\\Documents\\\\Clothing planner v3\\\\src\" -name \"*backup*\" -o -name \"*export*\" -o -name \"*import*\" 2>/dev/null | head -20)",
+      "Bash(cd \"/c/Users/admin/Documents/Clothing planner v3\" && gh secret set VITE_SUPABASE_URL --body \"https://vejgmgxavqauhmfhfjnb.supabase.co\")",
+      "Bash(cd \"/c/Users/admin/Documents/Clothing planner v3\" && gh run list --limit 3)",
+      "Bash(cd \"/c/Users/admin/Documents/Clothing planner v3\" && gh run view 22987965743 --log-failed)",
+      "Bash(cd \"/c/Users/admin/Documents/Clothing planner v3\" && grep -rl \"backdrop-blur-sm\" src/ --include=\"*.tsx\" | while read f; do sed -i 's/backdrop-blur-sm //g' \"$f\"; done)"
     ]
   }
 }

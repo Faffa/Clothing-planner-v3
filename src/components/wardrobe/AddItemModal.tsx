@@ -249,7 +249,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/50 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/50 p-4"
             onClick={onClose}
           >
             <motion.div
@@ -306,7 +306,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); undoRemoval(); }}
-                              className="bg-parchment/90 backdrop-blur-sm rounded-lg p-1.5 text-ink-muted hover:text-ink transition-colors shadow-sm"
+                              className="bg-parchment/90 rounded-lg p-1.5 text-ink-muted hover:text-ink transition-colors shadow-sm"
                               title="Undo background removal"
                             >
                               <Undo2 size={14} />
@@ -315,7 +315,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); setCropOpen(true); }}
-                            className="bg-parchment/90 backdrop-blur-sm rounded-lg p-1.5 text-ink-muted hover:text-ink transition-colors shadow-sm"
+                            className="bg-parchment/90 rounded-lg p-1.5 text-ink-muted hover:text-ink transition-colors shadow-sm"
                             title="Crop photo"
                           >
                             <Crop size={14} />
@@ -323,7 +323,7 @@ export function AddItemModal({ open, onClose, onSubmit }: AddItemModalProps) {
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
-                            className="bg-parchment/90 backdrop-blur-sm rounded-lg p-1.5 text-ink-muted hover:text-ink transition-colors shadow-sm"
+                            className="bg-parchment/90 rounded-lg p-1.5 text-ink-muted hover:text-ink transition-colors shadow-sm"
                             title="Change photo"
                           >
                             <ImagePlus size={14} />
