@@ -40,8 +40,16 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
 
-  // Profile still loading (null) — don't redirect yet
-  if (profile === null) return null;
+  // Profile still loading (null) — show loading indicator
+  if (profile === null) {
+    return (
+      <div className="min-h-screen bg-parchment flex items-center justify-center">
+        <p className="font-display text-2xl text-gold tracking-[0.2em] uppercase animate-pulse">
+          Maison
+        </p>
+      </div>
+    );
+  }
 
   if (!profile.onboarding_completed) {
     return <Navigate to="/onboarding" replace />;

@@ -25,14 +25,29 @@ export function useAuth() {
   return ctx;
 }
 
-async function fetchProfile(userId: string): Promise<UserProfile | null> {
+async function fetchOrCreateProfile(userId: string, displayName?: string): Promise<UserProfile | null> {
   if (!supabase) return null;
-  const { data } = await supabase
+  // Try to fetch existing profile
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('user_id', userId)
     .single();
-  return data as UserProfile | null;
+  if (data) return data as UserProfile;
+
+  // Profile missing (trigger may not have fired) — create it
+  if (error?.code === 'PGRST116' /* no rows */) {
+    const { data: created, error: insertErr } = await supabase
+      .from('profiles')
+      .insert({ user_id: userId, display_name: displayName ?? '' })
+      .select()
+      .single();
+    if (!insertErr && created) return created as UserProfile;
+    console.error('Failed to create profile:', insertErr);
+  } else if (error) {
+    console.error('Failed to fetch profile:', error);
+  }
+  return null;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -54,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: session.user.email ?? '',
           avatar_url: session.user.user_metadata?.avatar_url,
         });
-        const p = await fetchProfile(session.user.id);
+        const p = await fetchOrCreateProfile(session.user.id, session.user.user_metadata?.full_name ?? session.user.user_metadata?.name);
         setProfile(p);
       }
       setLoading(false);
@@ -68,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             email: session.user.email ?? '',
             avatar_url: session.user.user_metadata?.avatar_url,
           });
-          const p = await fetchProfile(session.user.id);
+          const p = await fetchOrCreateProfile(session.user.id, session.user.user_metadata?.full_name ?? session.user.user_metadata?.name);
           setProfile(p);
         } else {
           setUser(null);
