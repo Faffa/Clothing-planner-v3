@@ -39,6 +39,7 @@ export function ClothingCard({ item, onClick, selectable, selected, onSelect, on
           <img
             src={item.photo_url}
             alt={item.name}
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
+import { WardrobeProvider } from '@/contexts/WardrobeContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { WardrobePage } from '@/pages/WardrobePage';
@@ -70,7 +71,9 @@ function AppRoutes() {
         element={
           <AuthGuard>
             <OnboardingGuard>
-              <AppLayout />
+              <WardrobeProvider>
+                <AppLayout />
+              </WardrobeProvider>
             </OnboardingGuard>
           </AuthGuard>
         }

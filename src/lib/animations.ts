@@ -9,6 +9,13 @@ export const stagger: Variants = {
   },
 };
 
+export const staggerFast: Variants = {
+  initial: {},
+  animate: {
+    transition: { staggerChildren: 0.02 },
+  },
+};
+
 export const fadeUp: Variants = {
   initial: { opacity: 0, y: 12 },
   animate: {

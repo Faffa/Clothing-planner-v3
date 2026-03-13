@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
@@ -27,9 +27,9 @@ import { useWardrobe } from '@/hooks/useWardrobe';
 import { LAYERS } from '@/types';
 import type { Layer, ClothingItem } from '@/types';
 import { LAYER_LABELS } from '@/lib/constants';
-import { stagger, fadeUp } from '@/lib/animations';
+import { stagger, staggerFast, fadeUp } from '@/lib/animations';
 import { ClothingCardSkeleton } from '@/components/common/Skeleton';
-import { preloadBackgroundRemoval, removeBackground, fileToDataUrl } from '@/services/imageProcessingService';
+import { removeBackground, fileToDataUrl } from '@/services/imageProcessingService';
 import { useToast } from '@/contexts/ToastContext';
 
 type SortOption = 'recent' | 'name' | 'most-worn' | 'by-layer';
@@ -54,8 +54,6 @@ export function WardrobePage() {
   const [bgRemovalProgress, setBgRemovalProgress] = useState<{ current: number; total: number } | null>(null);
   const { showToast } = useToast();
 
-  // Preload WASM for background removal while user browses wardrobe
-  useEffect(() => { preloadBackgroundRemoval(); }, []);
 
   const filtered = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -331,7 +329,7 @@ export function WardrobePage() {
       {/* Grid */}
       {!loading && hasResults && (
         <motion.div
-          variants={stagger}
+          variants={filtered.length > 20 ? staggerFast : stagger}
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
         >
           {filtered.map(item => (

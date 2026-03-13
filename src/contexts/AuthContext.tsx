@@ -42,26 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!supabase || !isSupabaseConfigured) {
-      // Demo mode fallback
-      const timer = setTimeout(() => {
-        setUser({
-          id: 'demo-user-1',
-          email: 'demo@maison.app',
-          avatar_url: undefined,
-        });
-        setProfile({
-          id: 'profile-1',
-          user_id: 'demo-user-1',
-          display_name: 'Sarah',
-          location: 'Helsinki, Finland',
-          temp_unit: 'celsius',
-          week_start_day: 'monday',
-          onboarding_completed: true,
-          created_at: new Date().toISOString(),
-        });
-        setLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
+      setLoading(false);
+      return;
     }
 
     // Real Supabase auth
@@ -100,21 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    if (!supabase) {
-      // Demo mode: just set the demo user
-      setUser({ id: 'demo-user-1', email: 'demo@maison.app' });
-      setProfile({
-        id: 'profile-1',
-        user_id: 'demo-user-1',
-        display_name: 'Sarah',
-        location: 'Helsinki, Finland',
-        temp_unit: 'celsius',
-        week_start_day: 'monday',
-        onboarding_completed: true,
-        created_at: new Date().toISOString(),
-      });
-      return;
-    }
+    if (!supabase) return;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}` },
