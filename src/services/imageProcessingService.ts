@@ -1,8 +1,16 @@
-import { removeBackground as imglyRemoveBackground } from '@imgly/background-removal';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import imageCompression from 'browser-image-compression';
 import { CLOTHING_COLORS } from '@/types';
 import type { ClothingColor, Layer } from '@/types';
+
+// Lazy-load heavy WASM library to avoid blocking the main thread on import
+let _imglyRemoveBackground: typeof import('@imgly/background-removal').removeBackground | null = null;
+async function getImglyRemoveBackground() {
+  if (!_imglyRemoveBackground) {
+    const mod = await import('@imgly/background-removal');
+    _imglyRemoveBackground = mod.removeBackground;
+  }
+  return _imglyRemoveBackground;
+}
 
 // ── Processing Stage Type ────────────────────────────────────────────
 
@@ -43,6 +51,7 @@ export function preloadBackgroundRemoval(): Promise<void> {
   if (preloadPromise) return preloadPromise;
   preloadPromise = (async () => {
     try {
+      const imglyRemoveBackground = await getImglyRemoveBackground();
       // Create a tiny 1x1 canvas to trigger WASM download
       const canvas = document.createElement('canvas');
       canvas.width = 1;
@@ -62,6 +71,7 @@ export function preloadBackgroundRemoval(): Promise<void> {
 // ── Background Removal ──────────────────────────────────────────────
 
 export async function removeBackground(file: File): Promise<Blob> {
+  const imglyRemoveBackground = await getImglyRemoveBackground();
   const resized = await resizeForProcessing(file);
   const blob = await imglyRemoveBackground(resized, {
     output: { format: 'image/png', quality: 0.9 },
@@ -172,6 +182,7 @@ export async function detectItemMetadata(file: File): Promise<AIDetectionResult 
   if (!apiKey) return null;
 
   try {
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 

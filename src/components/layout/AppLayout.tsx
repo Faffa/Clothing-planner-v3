@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Menu } from 'lucide-react';
@@ -6,7 +5,6 @@ import { Sidebar } from './Sidebar';
 import { FeedbackButton } from '@/components/feedback/FeedbackButton';
 import { useFeedback } from '@/hooks/useFeedback';
 import { useMobileMenu } from '@/hooks/useMobileMenu';
-import { preloadBackgroundRemoval } from '@/services/imageProcessingService';
 
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
@@ -17,11 +15,6 @@ const pageVariants = {
 export function AppLayout() {
   const { enabled, addFeedback } = useFeedback();
   const menu = useMobileMenu();
-
-  useEffect(() => {
-    const t = setTimeout(() => preloadBackgroundRemoval(), 3000);
-    return () => clearTimeout(t);
-  }, []);
 
   return (
     <div className="min-h-screen bg-parchment">
